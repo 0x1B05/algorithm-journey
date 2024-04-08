@@ -1,26 +1,19 @@
-# 定义源代码目录和编译生成的字节码目录
-SRC_DIRS = $(wildcard src/*)
-BIN_DIRS = $(patsubst src/%,bin/%,$(SRC_DIRS))
-
-# 定义编译器和编译选项
 JC = javac
-JFLAGS = -d
+JI = java
+JFLAGS = -g -d bin
 
-# 默认目标为帮助信息
-default:
-	@echo "Usage: make <filename>"
+SRCDIR = src
+BINDIR = bin
 
-# 清理目标，删除编译生成的字节码文件
+# Rule to compile Java files
+$(BINDIR)/%.class: $(SRCDIR)/%.java
+	$(JC) $(JFLAGS) $<
+
+# Rule to run a specific Java class with input from input.txt
+%: $(BINDIR)/$(PACKAGE)/%.class
+	$(JI) -classpath $(BINDIR) $(PACKAGE).$@ < input.txt
+
 clean:
-	$(RM) -r $(BIN_DIRS)
+	rm -r $(BINDIR)/*
 
-# 编译单个 Java 文件
-$(BIN_DIRS)/%.class: $(SRC_DIRS)/%.java
-	$(JC) $(JFLAGS) $(@D) $<
-
-# 运行目标，用于运行特定字节码文件
-run:
-	java -cp $(BIN_DIRS) $(CLASS)
-
-# 声明伪目标
-.PHONY: default clean run
+.PHONY: clean
