@@ -410,16 +410,15 @@ master 公式:也叫主定理.它提供了一种通过渐近符号表示递推�
 $T [n] = a*T[n/b] + O (n^d)$
 
 #tip("Tip")[
-    - $T[n]$->母问题的规模 
-    - $T[n/b]$代表递归的子问题的规模 
-    - $a$是调用次数 
-    - $O(n^d)$除去递归之外的额外操作的复杂度
+  - $T[n]$->母问题的规模
+  - $T[n/b]$代表递归的子问题的规模
+  - $a$是调用次数
+  - $O(n^d)$除去递归之外的额外操作的复杂度
 ]
 
 + 当`d<log(b,a)`时,时间复杂度为`O(n^(logb a))`
 + 当`d=log(b,a)`时,时间复杂度为`O((n^d)*logn)`
 + 当`d>log(b,a)`时,时间复杂度为`O(n^d)`
-
 
 === 递归求数组的最大值
 
@@ -447,3 +446,183 @@ public static int process(int[] arr, int L, int R) {
 则得到的式子如下:
 `a=2,b=2,d=0`、`T [n] = 2*T[n/2] + O (1)` 、`d<log(b,a)`则时间复杂度为`O(n)`
 
+== 根据数据量猜解法
+
+一个基本事实
+
+- C/C++运行时间1s，java/python/go等其他语言运行时间1s\~2s，
+- 对应的常数指令操作量是 10^7 \~ 10^8，不管什么测试平台，不管什么cpu，都是这个数量级
+
+所以可以根据这个基本事实，来猜测自己设计的算法最终有没有可能在规定时间内通过
+
+运用 *根据数据量猜解法技巧* 的必要条件：
+
++ 题目要给定各个入参的范围最大值，正式笔试、比赛的题目一定都会给，面试中要和面试官确认
++ 对于自己设计的算法，时间复杂度要有准确的估计
+
+问题规模和可用算法
+
+#three-line-table[
+| \ |logn |n| n\*logn| n\*根号n| n^2| 2^n| n!|
+| - | - | - | - | - | - | - | - |
+|n <= 11    |Yes| Yes| Yes| Yes| Yes| Yes| Yes|
+|n <= 25    |Yes| Yes| Yes| Yes| Yes| Yes| No |
+|n <= 5000  |Yes| Yes| Yes| Yes| Yes| No |  No|
+|n <= 10^5  |Yes| Yes| Yes| Yes| No | No |  No|
+|n <= 10^6  |Yes| Yes| Yes| No |No  | No |  No|
+|n <= 10^7  |Yes| Yes| No | No |No  | No |  No|
+|n >= 10^8  |Yes| No |  No| No |No  | No |  No|
+]
+=== 题目1 : 最优的技能释放顺序
+
+现在有一个打怪类型的游戏，这个游戏是这样的，你有n个技能，每一个技能会有一个伤害，同时若怪物低于一定的血量，则该技能可能造成双倍伤害，每一个技能最多只能释放一次，已知怪物有m点血量，现在想问你最少用几个技能能消灭掉他（血量小于等于00）。
+
+输入描述：
+
+第一行输入一个整数T，代表有T组测试数据。对于每一组测试数据，一行输入2个整数`n`和`m`，代表有`n`个技能，怪物有`m`点血量。接下来`n`行，每一行输入两个数`A`和`x`，代表该技能造成的伤害和怪物血量小于等于`x`的时候该技能会造成双倍伤害
+
+输出描述：
+
+对于每一组数据，输出一行，代表使用的最少技能数量，若无法消灭输出`-1`。
+
+#tip("Tip")[
+```
+1≤T≤100
+1≤n≤10
+0≤m≤10^6
+1≤A,x≤m
+```
+]
+
+#example("Example")[
+输入：
+```
+3
+3 100
+10 20
+45 89
+5 40
+3 100
+10 20
+45 90
+5 40
+3 100
+10 20
+45 84
+5 40
+```
+输出：
+```
+3
+2
+-1
+```
+
+说明：
+总共3组数据
+- 对于第一组：我们首先用技能1，此时怪物血量剩余90，然后使用技能3，此时怪物剩余血量为85，最后用技能2，由于技能2在怪物血量小于89的时候双倍伤害，故此时怪物已经消灭，答案为3
+- 对于第二组：我们首先用技能1，此时怪物血量剩余90，然后用技能2，由于技能2在怪物血量小于90的时候双倍伤害，故此时怪物已经消灭，答案为2
+- 对于第三组：我们首先用技能1，此时怪物血量剩余90，然后使用技能3，此时怪物剩余血量为85，最后用技能2，由于技能2在怪物血量小于84的时候双倍伤害，故此时怪物无法消灭，输出-1
+]
+
+==== 解答
+
+注意到技能的数据小，直接全排列。
+#code(caption: [解答])[
+```java
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+
+/**
+ * Code01_KillMonsterEverySkillUseOnce
+ */
+public class Code01_KillMonsterEverySkillUseOnce {
+    public static int MAXN = 11;
+    public static int[] kill = new int[MAXN];
+    public static int[] blood = new int[MAXN];
+
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        while (in.nextToken() != StreamTokenizer.TT_EOF) {
+            int T = (int) in.nval;
+            for (int i = 0; i < T; i++) {
+                in.nextToken();
+                int n = (int) in.nval;
+                in.nextToken();
+                int m = (int) in.nval;
+                for (int j = 0; j < n; j++) {
+                    in.nextToken();
+                    kill[j] = (int)in.nval;
+                    in.nextToken();
+                    blood[j] = (int)in.nval;
+                }
+                int ans = compute(n, m, 0);
+                out.println(ans==Integer.MAX_VALUE ? -1:ans);
+            }
+        }
+        out.flush();
+        out.close();
+        br.close();
+    }
+
+    // n->技能数量，hp->怪物血量，cur->当前来到第几个技能
+    public static int compute(int n, int hp, int cur) {
+        if (hp <= 0) {
+            return cur;
+        }
+        if (cur == n) {
+            return Integer.MAX_VALUE;
+        }
+
+        int ans = Integer.MAX_VALUE;
+
+        for (int j = cur; j < n; j++) {
+            swap(cur, j);
+            ans = Math.min(ans, compute(n, hp-(hp>blood[cur]?kill[cur]:kill[cur]*2), cur+1));
+            swap(cur, j);
+        }
+
+        return ans;
+    }
+
+    public static void swap(int i, int j){
+        int tmp = blood[i];
+        blood[i] = blood[j];
+        blood[j] = tmp;
+
+        int tmp2 = kill[i];
+        kill[i] = kill[j];
+        kill[j] = tmp2;
+    }
+}
+```
+]
+
+#tip("Tip")[
+    当怪物不死的时候不能返回-1(结果只会返回-1了)，要返回`Integer.MAX_VALUE`作标记.
+]
+
+=== #link("https://leetcode.cn/problems/super-palindromes/")[题目2 : 超级回文数的数目]
+
+如果一个正整数自身是回文数，而且它也是一个回文数的平方，那么我们称这个数为超级回文数。
+
+现在，给定两个正整数 L 和 R （以字符串形式表示），返回包含在范围 [L, R] 中的超级回文数的数目。
+
+```
+1 <= len(L) <= 18
+1 <= len(R) <= 18
+```
+
+`L` 和 `R` 是表示 `[1, 10^18)` 范围的整数的字符串
+
+==== 解答
+
+10^18 -> 枚举根号 -> 枚举前一半 故
+
+前一半(1-10^5) -> (奇/偶)回文(10^9) ->10^18
