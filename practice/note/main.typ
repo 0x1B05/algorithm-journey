@@ -37,12 +37,16 @@
 #include "content/二分查找.typ"
 #include "content/同余原理.typ"
 #include "content/快速幂.typ"
+#include "content/前缀信息.typ"
+#include "content/KMP.typ"
+#include "content/Manacher.typ"
 
 #include "content/堆结构.typ"
 #include "content/二叉树.typ"
+#include "content/Morris遍历.typ"
 #include "content/图.typ"
 #include "content/链表.typ"
-#include "content/并查集和KMP.typ"
+#include "content/并查集.typ"
 #include "content/滑动窗口.typ"
 #include "content/有序表.typ"
 
@@ -50,7 +54,5 @@
 #include "content/动态规划.typ"
 #include "content/哈希表和哈希函数.typ"
 #include "content/贪心.typ"
-#include "content/Manacher.typ"
-#include "content/Morris遍历.typ"
 
 #include "content/杂题.typ"
