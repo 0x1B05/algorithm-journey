@@ -153,7 +153,7 @@ public static void dfs(Node node){
         return;
     }
     Stack<Node> stack = new Stack<>();
-    HashSet<Node> set = new HashSer<>();
+    HashSet<Node> set = new HashSet<>();
     stack.add(node);
     set.add(node);
     System.out.println(node.value);

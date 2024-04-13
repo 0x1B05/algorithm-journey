@@ -285,3 +285,141 @@ log2(n)+log3(n)
 当前时间+代价<=截止日期
 
 
+=== #link("https://leetcode.cn/problems/jian-sheng-zi-ii-lcof/")[题目4: 砍竹子II]
+
+现需要将一根长为正整数 `n` 的竹子砍为若干段，每段长度均为 正整数。请返回每段竹子长度的 最大乘积 是多少。 答案需要取模 `1e9+7`。
+
+#tip("Tip")[
+2 <= n <= 1000
+]
+
+==== 解答
+#code(caption: [题目4: 砍竹子])[
+```java
+public class Code01_CuttingBamboo {
+
+	// 快速幂，求余数
+	// 求x的n次方，最终得到的结果 % mod
+	public static long power(long x, int n, int mod) {
+		long ans = 1;
+		while (n > 0) {
+			if ((n & 1) == 1) {
+				ans = (ans * x) % mod;
+			}
+			x = (x * x) % mod;
+			n >>= 1;
+		}
+		return ans;
+	}
+
+	public static int cuttingBamboo(int n) {
+		if (n == 2) {
+			return 1;
+		}
+		if (n == 3) {
+			return 2;
+		}
+		int mod = 1000000007;
+		// n = 4  -> 2 * 2
+		// n = 5  -> 3 * 2
+		// n = 6  -> 3 * 3
+		// n = 7  -> 3 * 2 * 2
+		// n = 8  -> 3 * 3 * 2
+		// n = 9  -> 3 * 3 * 3
+		// n = 10 -> 3 * 3 * 2 * 2
+		// n = 11 -> 3 * 3 * 3 * 2
+		// n = 12 -> 3 * 3 * 3 * 3
+		int tail = n % 3 == 0 ? 1 : (n % 3 == 1 ? 4 : 2);
+		int power = (tail == 1 ? n : (n - tail)) / 3;
+		return (int) (power(3, power, mod) * tail % mod);
+	}
+
+}
+```
+]
+
+=== 题目5: 分成k份的最大乘积
+
+一个数字n一定要分成k份，得到的乘积最大是多少?
+
+#tip("Tip")[
+- 数字`n`和`k`，可能非常大，到达`10^12`规模, 结果可能更大，所以返回结果对`1000000007`取模
+- 来自真实大厂笔试，没有在线测试，对数器验证
+]
+
+==== 解答
+
+#code(caption: [题目5: 分成k份的最大乘积])[
+```java
+public class Code02_MaximumProduct {
+        // 快速幂
+  	public static long power(long x, int n, int mod) {
+		long ans = 1;
+		while (n > 0) {
+			if ((n & 1) == 1) {
+				ans = (ans * x) % mod;
+			}
+			x = (x * x) % mod;
+			n >>= 1;
+		}
+		return ans;
+	}
+
+	// 暴力递归
+	public static int maxValue1(int n, int k) {
+		return f1(n, k);
+	}
+
+	// 剩余的数字rest拆成k份
+	// 返回最大乘积
+	// 暴力尝试一定能得到最优解
+	public static int f1(int rest, int k) {
+		if (k == 1) {
+			return rest;
+		}
+		int ans = Integer.MIN_VALUE;
+		for (int cur = 1; cur <= rest && (rest - cur) >= (k - 1); cur++) {
+			int curAns = cur * f1(rest - cur, k - 1);
+			ans = Math.max(ans, curAns);
+		}
+		return ans;
+	}
+
+	// 贪心
+	// 如果结果很大，那么求余数
+	public static int maxValue2(int n, int k) {
+		int mod = 1000000007;
+		long a = n / k;
+		int b = n % k;
+		long part1 = power(a + 1, b, mod);
+		long part2 = power(a, k - b, mod);
+		return (int) (part1 * part2) % mod;
+	}
+
+	// 对数器
+	public static void main(String[] args) {
+		int N = 30;
+		int testTimes = 2000;
+		System.out.println("测试开始");
+		for (int i = 1; i <= testTimes; i++) {
+			int n = (int) (Math.random() * N) + 1;
+			int k = (int) (Math.random() * n) + 1;
+			int ans1 = maxValue1(n, k);
+			int ans2 = maxValue2(n, k);
+			if (ans1 != ans2) {
+				// 如果出错了
+				// 可以增加打印行为找到一组出错的例子
+				// 然后去debug
+				System.out.println("出错了！");
+			}
+			if (i % 100 == 0) {
+				System.out.println("测试到第" + i + "组");
+			}
+		}
+		System.out.println("测试结束");
+	}
+
+}
+```
+]
+
