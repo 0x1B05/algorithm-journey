@@ -77,7 +77,7 @@ public class Code01_CreateGraph {
         }
     }
 
-    // 建立有向图带权图
+    // 建立无向图带权图
     public static void undirectGraph(int[][] edges) {
         // edge[i][0]->start edge[i][1]->end edge[i][2]->weight
 

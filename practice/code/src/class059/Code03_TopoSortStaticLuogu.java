@@ -32,11 +32,11 @@ public class Code03_TopoSortStaticLuogu {
     // 小根堆里加入数字
     public static void push(int num) {
         int cur = heapSize++;
-        heap[i] = num;
+        heap[cur] = num;
         // heapInsert
-        while (heap[i] < heap[(i - 1) / 2]) {
-            swap(i, (i - 1) / 2);
-            i = (i - 1) / 2;
+        while (heap[cur] < heap[(cur - 1) / 2]) {
+            swap(cur, (cur - 1) / 2);
+            cur = (cur - 1) / 2;
         }
     }
     // 小根堆里弹出最小值
@@ -46,21 +46,17 @@ public class Code03_TopoSortStaticLuogu {
         // heapify
         int cur = 0;
         int left = 2 * cur + 1;
-        int right = left + 1;
         while (left < heapSize) {
-            int min = Math.min(heap[cur], Math.min(heap[left], heap[right]));
-
-            if (min = heap[cur]) {
+            int right = left + 1;
+            int minChild = right < heapSize && heap[left] > heap[right] ? right : left;
+            int min = heap[minChild] < heap[cur] ? minChild : cur;
+            if (min == cur) {
                 break;
-            } else if (min == heap[left]) {
-                swap(cur, left);
-                cur = left;
-            } else if (min == heap[right]) {
-                swap(cur, right);
-                cur = right;
+            } else {
+                swap(minChild, cur);
+                cur = minChild;
+                left = 2 * cur + 1;
             }
-            left = 2 * cur + 1;
-            right = left + 1;
         }
 
         return ret;
@@ -84,25 +80,30 @@ public class Code03_TopoSortStaticLuogu {
         Arrays.fill(head, 0, n + 1, 0);
         Arrays.fill(indegree, 0, n + 1, 0);
     }
+
     public static void addEdge(int f, int t) {
         next[cnt] = head[f];
         to[cnt] = t;
         indegree[t]++;
         head[f] = cnt++;
     }
-    public static boolean topSort() {
-        int l = 0, r = 0;
-        boolean ans = true;
+
+    public static void topSort() {
         for (int i = 1; i <= n; i++) {
             if (indegree[i] == 0) {
-                // 这里应该用小根堆
-                // queue[r++] = i;
+                push(i);
             }
         }
-        int cnt = 0;
-        while (l < r) {
+        int fill = 0;
+        while (!isEmpty()) {
+            int cur = pop();
+            ans[fill++] = cur;
+            for (int ei = head[cur]; ei != 0; ei = next[ei]) {
+                if (--indegree[to[ei]] == 0) {
+                    push(to[ei]);
+                }
+            }
         }
-        return ans;
     }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -121,12 +122,11 @@ public class Code03_TopoSortStaticLuogu {
                 in.nextToken();
                 addEdge(f, t);
             }
-            if (topSort()) {
-                for (int i = 0; i < n - 1; i++) {
-                    System.out.print(queue[i] + " ");
-                }
-                out.println(queue[n - 1]);
+            topSort();
+            for (int i = 0; i < n - 1; i++) {
+                System.out.print(ans[i] + " ");
             }
+            out.println(ans[n - 1]);
         }
         out.flush();
         out.close();

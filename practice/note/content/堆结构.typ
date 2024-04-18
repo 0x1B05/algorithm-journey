@@ -2,7 +2,6 @@
 
 #pagebreak()
 = 堆结构
-
 堆的节点关系:
 
 ```
@@ -11,76 +10,315 @@ right = 2*parent + 2
 parent = (child-1)/2
 ```
 
+完全二叉树和数组前缀范围来对应，大小，单独的变量size来控制
+
+堆的调整：`heapInsert`（向上调整）、`heapify`（向下调整）
+
+#tip(
+  "Tip",
+)[
+`heapInsert`、`heapify`方法的单次调用，时间复杂度`O(log n)`，完全二叉树的结构决定的
+]
+
 == 堆排序
 
-#code(caption: [堆排序])[
+=== 复杂度分析
+
+==== 建堆复杂度
+
+- 从顶到底建堆，时间复杂度`O(n * log n)`，`log1 + log2 + log3 + … + logn -> O(n*logn)`
+  #tip("Tip")[
+  或者用增倍分析法：
+  - 建堆的复杂度分析
+    - 当元素为N时复杂度的上限是`O(n * log n)`
+    - 当元素为2N时复杂度的下限是`O(n * log n)`
+    - 故而复杂度就是`O(n * log n)`
+  - 子矩阵数量的复杂度分析
+    - `n*m`矩阵, 任选两点后去重$(n^2 m^2)/4$, 复杂度上限$O(n^2 m^2)$
+    - `2n*2m`矩阵, 2 4象限任选两点不需要去重, 复杂度下限$O(n^2 m^2)$
+    - 故而复杂度就是$O(n^2 m^2)$
+  ]
+
+- 从底到顶建堆，时间复杂度`O(n)`，总代价就是简单的等比数列关系，为啥会有差异？
+  - 顶到底，第一层`heapInsert`一层，第二层`heapInsert`二层...
+  - 底到顶，最后一层`heapify`一层，倒二层`heapify`二层...
+  - 而底的元素多，因此底到顶`heapify`更好
+
+==== 调整阶段
+从最大值到最小值依次归位，时间复杂度`O(n * log n)`, 时间复杂度`O(n * log n)`，不管以什么方式建堆，调整阶段的时间复杂度都是这个，所以整体复杂度也是这个.
+
+==== 空间复杂度
+额外空间复杂度是`O(1)`，因为堆直接建立在了要排序的数组上，所以没有什么额外空间
+
+=== #link("https://www.luogu.com.cn/problem/P1177")[ acm风格 ]
+#code(
+  caption: [堆排序-acm风格],
+)[
 ```java
-public static void heapSort(int[] nums) {
-    if (nums == null || nums.length < 2) {
-        return;
-    }
-    // // 首先对整体进行堆化
-    // int heapSize = 0;
-    // for (heapSize = 0; heapSize < nums.length; heapSize++) {
-    // heapInsert(nums, heapSize); // o(logn)
-    // }
+public class Code01_HeapSort {
+    public static int MAXN = 100001;
+    public static int[] nums = new int[MAXN];
+    public static int n;
 
-    // 一种更快的堆化方式：利用heapify,所有数字是一次性给出,而不是一个个
-    int heapSize = nums.length;
-    for (int i = heapSize - 1; i >= 0; i--) { // 注意取等0
-        heapify(nums, i, heapSize);
-    }
-    heapSize = nums.length;
-    // 假设是完全二叉树,则复杂度：T(n) = n/2+(n/4)*2+(n/8)*3.... 为o(n)
-
-    // heapSize表示长度而不是下标
-    for (int i = 0; i < nums.length; i++) {
-        swap(nums, 0, --heapSize); // o(1)
-        heapify(nums, 0, heapSize); // o(logn) 事实上heapInsert也能完成堆化操作,但是复杂度高
-    }
-}
-
-// 当前处于index位置,继续向上移动
-public static void heapInsert(int[] nums, int index) {
-    int parent = (index - 1) / 2;
-    while (nums[index] > nums[parent]) {// 循环停止条件：1.已经是根节点的时候 2.父节点更大时
-        swap(nums, index, parent);
-        index = (index - 1) / 2;
-        parent = (index - 1) / 2;
-    }
-}
-
-// 某个数在index位置,能否往下移动(子树都是大根堆)
-// 用处: 把大根堆的最大值去掉之后再调整成大根堆(先把堆的最后一个和根交换, 然后对根heapify)
-public static void heapify(int[] nums, int index, int heapSize) {
-    int parent = index;
-    int left = 2 * parent + 1;
-    int right = 2 * parent + 2;
-    while (left < heapSize) { // left是下标,heapSize是具体长度,故用<;这句话里表示如果还有孩子的话
-        int largerChild = right < heapSize && nums[right] > nums[left] ? right : left;// 找到孩子中较大的一个
-        int max = nums[largerChild] > nums[parent] ? largerChild : parent; // 找出父亲和较大的孩子里较大的那一个
-        if (max != parent) { // 最大值不是父节点,交换父节点和最大值（即较大孩子）
-            swap(nums, parent, max);
-            parent = max;
-            left = 2 * parent + 1;
-            right = 2 * parent + 2;
-        } else { // 最大值就是父节点,堆化完成
-            break;
+    // i位置的数，变大了，又想维持大根堆结构
+    // 向上调整大根堆
+    public static void heapInsert(int cur) {
+        int parent = (cur - 1) / 2;
+        while (nums[cur] > nums[parent]) {
+            swap(cur, parent);
+            cur = parent;
+            parent = (cur - 1) / 2;
         }
+    }
+
+    // i位置的数，变小了，又想维持大根堆结构
+    // 向下调整大根堆
+    // 当前堆的大小为size
+    public static void heapify(int cur, int size) {
+        int left = 2 * cur + 1;
+        while (left < size) {
+            int right = left + 1;
+            int maxChild = right < size && nums[right] > nums[left] ? right : left;
+            int max = nums[maxChild] > nums[cur] ? maxChild : cur;
+            if (max == cur) {
+                break;
+            } else {
+                swap(max, cur);
+                cur = max;
+                left = 2 * cur + 1;
+            }
+        }
+    }
+
+    // 从顶到底建立大根堆，O(n * logn)
+    // 依次弹出堆内最大值并排好序，O(n * logn)
+    // 整体时间复杂度O(n * logn)
+    public static void heapSort1() {
+        // 每个节点向上移动形成大根堆
+        for (int cur = 1; cur < n; cur++) {
+            heapInsert(cur);
+        }
+        int size = n;
+        while (size > 0) {
+            swap(0, --size);
+            heapify(0, size);
+        }
+    }
+
+    // 从底到顶建立大根堆，O(n)
+    // 依次弹出堆内最大值并排好序，O(n * logn)
+    // 整体时间复杂度O(n * logn)
+    public static void heapSort2() {
+        for (int cur = n - 1; cur >= 0; cur--) {
+            heapify(cur, n);
+        }
+        int size = n;
+        while (size > 1) {
+            swap(0, --size);
+            heapify(0, size);
+        }
+    }
+
+    public static void swap(int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        in.nextToken();
+        n = (int) in.nval;
+        for (int i = 0; i < n; i++) {
+            in.nextToken();
+            nums[i] = (int) in.nval;
+        }
+        // heapSort1();
+        heapSort2();
+        for (int i = 0; i < n - 1; i++) {
+            out.print(nums[i] + " ");
+        }
+        out.println(nums[n - 1]);
+        out.flush();
+        out.close();
+        br.close();
     }
 }
 ```
 ]
 
+#tip(
+  "Tip",
+)[
 - 降序可以使用小根堆。
 - 若是已知某个大根堆中 `i` 位置的数改成了`x`, 继续调整为大根堆要么 `heapInsert` 要么 `heapify`
+]
+
+=== #link("https://www.luogu.com.cn/problem/P1177")[ acm风格 ]
+
+#code(
+  caption: [堆排序-leetcode风格],
+)[
+```java
+public class Code02_HeapSort {
+    // i位置的数，变小了，又想维持大根堆结构
+    // 向下调整大根堆
+    // 当前堆的大小为size
+    public static void heapify(int[] nums, int cur, int size) {
+        int left = 2 * cur + 1;
+        while (left < size) {
+            int right = left + 1;
+            int maxChild = right < size && nums[right] > nums[left] ? right : left;
+            int max = nums[maxChild] > nums[cur] ? maxChild : cur;
+            if (max == cur) {
+                break;
+            } else {
+                swap(nums, max, cur);
+                cur = max;
+                left = 2 * cur + 1;
+            }
+        }
+    }
+
+    // i位置的数，变大了，又想维持大根堆结构
+    // 向上调整大根堆
+    public static void heapInsert(int[] nums, int cur) {
+        int parent = (cur - 1) / 2;
+
+        while (nums[cur] > nums[parent]) {
+            swap(nums, cur, parent);
+            cur = parent;
+            parent = (cur - 1) / 2;
+        }
+    }
+
+    // 从顶到底建立大根堆，O(n * logn)
+    // 依次弹出堆内最大值并排好序，O(n * logn)
+    // 整体时间复杂度O(n * logn)
+    public static void heapSort1(int[] nums) {
+        int n = nums.length;
+        // 每个节点向上移动形成大根堆
+        for (int i = 0; i < n; i++) {
+            heapInsert(nums, i);
+        }
+
+        int size = n;
+        while (size > 1) {
+            swap(nums, 0, --size);
+            heapify(nums, 0, size);
+        }
+    }
+
+    // 从底到顶建立大根堆，O(n)
+    // 依次弹出堆内最大值并排好序，O(n * logn)
+    // 整体时间复杂度O(n * logn)
+    public static void heapSort2(int[] nums) {
+        int n = nums.length;
+        for (int cur = n - 1; cur >= 0; cur--) {
+            heapify(nums, cur, n);
+        }
+        int size = n;
+        while (size > 1) {
+            swap(nums, 0, --size);
+            heapify(nums, 0, size);
+        }
+    }
+    public static void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+
+    public static int[] sortArray(int[] nums) {
+        if (nums.length > 1) {
+            // heapSort1为从顶到底建堆然后排序
+            // heapSort2为从底到顶建堆然后排序
+            // 用哪个都可以
+            // heapSort1(nums);
+            heapSort2(nums);
+        }
+        return nums;
+    }
+}
+```
+]
 
 == 经典题目
 
-=== #link("https://www.nowcoder.com/practice/1ae8d0b6bb4e4bcdbf64ec491f63fc37")[最多线段重合问题]
+=== #link(
+  "https://www.nowcoder.com/practice/65cfde9e5b9b4cf2b6bafa5f3ef33fa6",
+)[题目1: 合并K个有序链表]
+
+合并 `k` 个升序的链表并将结果作为一个升序的链表返回其头节点。
+
+
+#example("Example")[
+- 输入： `[L{1,2,3},{4,5,6,7}]`
+- 返回值：`{1,2,3,4,5,6,7}`
+]
+#tip("Tip")[
+- 节点总数 `0≤n≤5000`
+- 每个节点的`val`满足 `∣val∣<=1000`
+- 要求：时间复杂度 `O(nlogn)`
+]
+
+==== 解答
+
+k个链表；n个节点。
+
+暴力解法复杂度分析： 把所有节点加入一个大容器，然后再排序。
+- 空间O(n)
+- 时间O(n)+O(nlogn)
+
+堆结构复杂度分析：
+- 空间O(k)
+- 时间O(nlogk)
+
+#code(caption: [题目1: 合并K个有序链表])[
+```java
+public class Code01_MergeKSortedLists {
+    public static class ListNode {
+        public int val;
+        public ListNode next;
+    }
+
+    public ListNode mergeKLists(ArrayList<ListNode> lists) {
+        PriorityQueue<ListNode> heap = new PriorityQueue<>((a, b) -> (a.val - b.val));
+        for (ListNode listNode : lists) {
+            if (listNode != null) {
+                heap.add(listNode);
+            }
+        }
+        if (heap.isEmpty()) {
+            return null;
+        }
+        ListNode head = heap.poll();
+        ListNode tail = head;
+        if (tail.next != null) {
+            heap.add(tail.next);
+        }
+        while (!heap.isEmpty()) {
+            ListNode cur = heap.poll();
+            tail.next = cur;
+            tail = cur;
+            if (cur.next != null) {
+                heap.add(cur.next);
+            }
+        }
+        return head;
+    }
+}
+```
+]
+
+=== #link(
+  "https://www.nowcoder.com/practice/1ae8d0b6bb4e4bcdbf64ec491f63fc37",
+)[题目2: 最多线段重合问题]
 
 每一个线段都有 `start` 和 `end` 两个数据项，表示这条线段在 X 轴上从 `start` 位置开始到 `end` 位置结束。给定一批线段，求所有重合区域中最多重合了几个线段，首尾相接的线段不算重合。
-例如：线段`[1,2]`和线段`[2.3]`不重合。 线段`[1,3]`和线段`[2,3]`重合
+例如：线段`[1,2]`和线段`[2,3]`不重合。 线段`[1,3]`和线段`[2,3]`重合
 
 - 输入描述：
   - 第一行一个数`N`，表示有`N`条线段
@@ -88,10 +326,14 @@ public static void heapify(int[] nums, int index, int heapSize) {
 - 输出描述：
   - 输出一个数，表示同一个位置最多重合多少条线段
 
-===== 解法
+==== 解答
 
-先按照开始为止从小到大排序. 接着把结束位置放到小根堆里.
-来到`[x,y]`, 把小根堆里面小于等于`x`的弹出, 把`y`放到小根堆, 看小根堆里有几个, 即当前`[x,y]`线段的答案.
+先按照开始为止从小到大排序. 接着把结束位置放到小根堆里. 来到`[x,y]`,
+把小根堆里面小于等于`x`的弹出, 把`y`放到小根堆, 看小根堆里有几个, 即当前`[x,y]`线段的答案.
 
 所有线段中最大的值.
+
+=== #link(
+  "https://leetcode.cn/problems/minimum-operations-to-halve-array-sum/",
+)[题目3: 将数组和减半的最少操作次数]
 
