@@ -15,16 +15,17 @@
 
 1. 不要去纠结严格证明，每个题都去追求严格证明，浪费时间、收益很低，而且千题千面。玄学！
 2. 一定要掌握用对数器验证的技巧，这是解决贪心问题的关键
-3. 解法几乎只包含贪心思路的题目，代码量都不大
+3. 解答几乎只包含贪心思路的题目，代码量都不大
 4. 大量累积贪心的经验，重点不是证明，而是题目的特征，以及贪心方式的特征，做好总结方便借鉴
 5. 关注题目数据量，题目的解可能来自贪心，也很可能不是，如果数据量允许，能不用贪心就不用（稳）
 6. 贪心在笔试中出现概率不低，但是面试中出现概率较低，原因是 淘汰率 vs 区分度
 7. 广义的贪心无所不在，可能和别的思路结合，一般都可以通过自然智慧想明白，依然不纠结证明
 
-=== 经典题目
+=== 题目1: 字典序最小
 
 `strs` 中全是非空字符串，要把所有字符串拼接起来，形成字典序最小的结果
 
+#code(caption: [题目1: 字典序最小])[
 ```java
 // 暴力方法, 为了验证
 // 生成所有可能的排列
@@ -117,17 +118,20 @@ public static void main(String[] args) {
     System.out.println("测试结束");
 }
 ```
+]
 
 其中暴力方法的解析, 见#link("经典递归流程.md")[经典递归流程]
 
-=== #link("https://leetcode.cn/problems/largest-number/")[ 最大数 ]
+=== #link("https://leetcode.cn/problems/largest-number/")[ 题目2: 最大数 ]
 
 给定一组非负整数 nums，重新排列每个数的顺序（每个数不可拆分）使之组成一个最大的整数。
 
-> 输出结果可能非常大，所以你需要返回一个字符串而不是整数。
+#tip("Tip")[
+输出结果可能非常大，所以你需要返回一个字符串而不是整数。   
+]
 
+#code(caption: [题目2: 最大数])[
 ```java
-// 测试链接 : https://leetcode.cn/problems/largest-number/
 public static String largestNumber(int[] nums) {
     int n = nums.length;
     String[] strs = new String[n];
@@ -145,25 +149,27 @@ public static String largestNumber(int[] nums) {
     return path.toString();
 }
 ```
+]
 
-=== #link("https://leetcode.cn/problems/two-city-scheduling/")[ 两地调度 ]
+=== #link("https://leetcode.cn/problems/two-city-scheduling/")[ 题目3: 两地调度 ]
 
 公司计划面试 `2n` 人。给你一个数组 `costs` ，其中 `costs[i] = [aCosti, bCosti]` 。第 `i` 人飞往 `a` 市的费用为 `aCosti` ，飞往 `b` 市的费用为 `bCosti` 。
 
 返回将每个人都飞到 `a` 、`b` 中某座城市的最低费用，要求每个城市都有 `n` 人抵达。
 
-示例 1：
-
-输入：`costs = [[10,20],[30,200],[400,50],[30,20]]`
-输出：`110`
-解释：
-第一个人去 a 市，费用为 10。
-第二个人去 a 市，费用为 30。
-第三个人去 b 市，费用为 50。
-第四个人去 b 市，费用为 20。
+#example("Example")[
+- 输入：`costs = [[10,20],[30,200],[400,50],[30,20]]`
+- 输出：`110`
+- 解释：
+  - 第一个人去 a 市，费用为 10。
+  - 第二个人去 a 市，费用为 30。
+  - 第三个人去 b 市，费用为 50。
+  - 第四个人去 b 市，费用为 20。
+]
 
 思路, 先让所有人都去 a, 接着算 a 改到 b 的差值, 差值最小的前 n 个去 b.
 
+#code(caption: [ 题目3: 两地调度 ])[
 ```java
 public static int twoCitySchedCost(int[][] costs) {
     int n = costs.length;
@@ -181,11 +187,13 @@ public static int twoCitySchedCost(int[][] costs) {
     return sum;
 }
 ```
+]
 
-> 这里面先算都去 a, 再进行修正的技巧值得学习.
+#tip("Tip")[
+这里面先算都去 `a`, 再进行修正的技巧值得学习.
+]
 
-=== #link("https://leetcode.cn/problems/minimum-number-of-days-to-eat-n-oranges/")[ 吃掉 N 个橘子的最少天数 ]
-
+=== #link("https://leetcode.cn/problems/minimum-number-of-days-to-eat-n-oranges/")[ 题目4: 吃掉 N 个橘子的最少天数 ]
 厨房里总共有 n 个橘子，你决定每一天选择如下方式之一吃这些橘子：
 
 - 吃掉一个橘子。
@@ -194,27 +202,25 @@ public static int twoCitySchedCost(int[][] costs) {
 
 请你返回吃掉所有 n 个橘子的最少天数。
 
-=== 示例 1：
+#tip("Tip")[
+- 输入：n = 10
+- 输出：4
+- 解释：你总共有 10 个橘子。
+  - 第 1 天：吃 1 个橘子，剩余橘子数 `10 - 1 = 9`。
+  - 第 2 天：吃 6 个橘子，剩余橘子数 `9 - 2*(9/3) = 9 - 6 = 3`。（9 可以被 3 整除）
+  - 第 3 天：吃 2 个橘子，剩余橘子数 `3 - 2*(3/3) = 3 - 2 = 1`。
+  - 第 4 天：吃掉最后 1 个橘子，剩余橘子数 `1 - 1 = 0`。
+]
 
-> 输入：n = 10
-> 输出：4
-> 解释：你总共有 10 个橘子。
-> 第 1 天：吃 1 个橘子，剩余橘子数 10 - 1 = 9。
-> 第 2 天：吃 6 个橘子，剩余橘子数 9 - 2*(9/3) = 9 - 6 = 3。（9 可以被 3 整除）
-> 第 3 天：吃 2 个橘子，剩余橘子数 3 - 2*(3/3) = 3 - 2 = 1。
-> 第 4 天：吃掉最后 1 个橘子，剩余橘子数 1 - 1 = 0。
-> 你需要至少 4 天吃掉 10 个橘子。
-
-=== 解法
-
+==== 解答
 1. 吃掉一个橘子
-2. 如果 n 能被 2 整除，吃掉一半的橘子，剩下一半
-3. 如果 n 能被 3 正数，吃掉三分之二的橘子，剩下三分之一
+2. 如果 `n` 能被 2 整除，吃掉一半的橘子，剩下一半
+3. 如果 `n` 能被 3 正数，吃掉三分之二的橘子，剩下三分之一
 
 因为方法 2 和 3，是按比例吃橘子，所以必然会非常快, 所以，决策如下：
 
-- 可能性 1：为了使用 2 方法，先把橘子吃成 2 的整数倍，然后直接干掉一半，剩下的 n/2 调用递归, 即，`n % 2 + 1 + minDays(n/2)`
-- 可能性 2：为了使用 3 方法，先把橘子吃成 3 的整数倍，然后直接干掉三分之二，剩下的 n/3 调用递归, 即，`n % 3 + 1 + minDays(n/3)`
+- 可能性 1：为了使用 2 方法，先把橘子吃成 2 的整数倍，然后直接干掉一半，剩下的 `n/2` 调用递归, 即，`n % 2 + 1 + minDays(n/2)`
+- 可能性 2：为了使用 3 方法，先把橘子吃成 3 的整数倍，然后直接干掉三分之二，剩下的 `n/3` 调用递归, 即，`n % 3 + 1 + minDays(n/3)`
 
 这两个中选择一个最小的.
 
@@ -238,13 +244,9 @@ public static int minDays(int n) {
 }
 ```
 
-复杂度分析.
+复杂度分析: log2(n)+log3(n)
 
-log2(n)+log3(n)
-
-牛逼!!!
-
-=== #link("https://www.nowcoder.com/practice/1ae8d0b6bb4e4bcdbf64ec491f63fc37")[最多线段重合问题]
+=== #link("https://www.nowcoder.com/practice/1ae8d0b6bb4e4bcdbf64ec491f63fc37")[题目5: 最多线段重合问题]
 
 每一个线段都有 `start` 和 `end` 两个数据项，表示这条线段在 X 轴上从 `start` 位置开始到 `end` 位置结束。给定一批线段，求所有重合区域中最多重合了几个线段，首尾相接的线段不算重合。
 例如：线段`[1,2]`和线段`[2.3]`不重合。 线段`[1,3]`和线段`[2,3]`重合
@@ -255,13 +257,10 @@ log2(n)+log3(n)
 - 输出描述：
   - 输出一个数，表示同一个位置最多重合多少条线段
 
-=== 解法
+==== 解答
 
-```java
 
-```
-
-=== #link("https://leetcode.cn/problems/course-schedule-iii/")[ 课程表 III ]
+=== #link("https://leetcode.cn/problems/course-schedule-iii/")[题目6: 课程表 III ]
 
 这里有 `n` 门不同的在线课程，按从 `1` 到 `n` 编号。给你一个数组 `courses` ，其中 `courses[i] = [durationi, lastDayi]` 表示第 `i` 门课将会持续上 `durationi` 天课，并且必须在不晚于 `lastDayi` 的时候完成。你的学期从第 1 天开始。且不能同时修读两门及两门以上的课程。
 
@@ -278,14 +277,16 @@ log2(n)+log3(n)
   - 第 4 门课现在不能修，因为将会在第 3300 天完成它，这已经超出了关闭日期。
 ]
 
-=== 解法
+=== 解答
 
 早结束的课程,优先考虑. 晚结束的课程, 后面考虑.
 
 当前时间+代价<=截止日期
 
 
-=== #link("https://leetcode.cn/problems/jian-sheng-zi-ii-lcof/")[题目4: 砍竹子II]
+== 专题2
+
+=== #link("https://leetcode.cn/problems/jian-sheng-zi-ii-lcof/")[题目1: 砍竹子II]
 
 现需要将一根长为正整数 `n` 的竹子砍为若干段，每段长度均为 正整数。请返回每段竹子长度的 最大乘积 是多少。 答案需要取模 `1e9+7`。
 
@@ -294,7 +295,8 @@ log2(n)+log3(n)
 ]
 
 ==== 解答
-#code(caption: [题目4: 砍竹子])[
+
+#code(caption: [题目1: 砍竹子])[
 ```java
 public class Code01_CuttingBamboo {
 
@@ -338,7 +340,7 @@ public class Code01_CuttingBamboo {
 ```
 ]
 
-=== 题目5: 分成k份的最大乘积
+=== 题目2: 分成k份的最大乘积
 
 一个数字n一定要分成k份，得到的乘积最大是多少?
 
@@ -349,7 +351,7 @@ public class Code01_CuttingBamboo {
 
 ==== 解答
 
-#code(caption: [题目5: 分成k份的最大乘积])[
+#code(caption: [题目2: 分成k份的最大乘积])[
 ```java
 public class Code02_MaximumProduct {
         // 快速幂
