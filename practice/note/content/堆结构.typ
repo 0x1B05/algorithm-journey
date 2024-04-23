@@ -276,7 +276,9 @@ k个链表；n个节点。
 - 空间O(k)
 - 时间O(nlogk)
 
-#code(caption: [题目1: 合并K个有序链表])[
+#code(
+  caption: [题目1: 合并K个有序链表],
+)[
 ```java
 public class Code01_MergeKSortedLists {
     public static class ListNode {
@@ -326,14 +328,220 @@ public class Code01_MergeKSortedLists {
 - 输出描述：
   - 输出一个数，表示同一个位置最多重合多少条线段
 
+#example("Example")[
+输入：
+```
+  3
+  1 2
+  2 3
+  1 3
+  ```
+输出：`2`
+]
+
+#tip("Tip")[
+  - $N≤10^4$
+  - $1≤"start","end"≤10^5$
+]
+
 ==== 解答
 
-先按照开始为止从小到大排序. 接着把结束位置放到小根堆里. 来到`[x,y]`,
+重合区域的左边界一定是某个线段的左边界。
+
+先按照开始位置从小到大排序. 接着把结束位置放到小根堆里. 来到`[x,y]`,
 把小根堆里面小于等于`x`的弹出, 把`y`放到小根堆, 看小根堆里有几个, 即当前`[x,y]`线段的答案.
 
-所有线段中最大的值.
+解释： 以`x`为重合区域左边界，有多少线段(包括自身)能到达`x`的右边，因为左边的线段开始位置比`x`早，结束位置又在`x`之后，那就是算一次重合(结束位置在`x`之前的已经被弹出)。
+
+#code(
+  caption: [题目2: 最多线段重合问题],
+)[
+```java
+public class Code02_MaxCover {
+    public static int MAXN = 10001;
+    public static int n;
+    public static int[][] line = new int[MAXN][2];
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        while (in.nextToken() != StreamTokenizer.TT_EOF) {
+            n = (int) in.nval;
+            for (int i = 0; i < n; i++) {
+                in.nextToken();
+                line[i][0] = (int) in.nval;
+                in.nextToken();
+                line[i][1] = (int) in.nval;
+            }
+            out.println(compute());
+        }
+        out.flush();
+        out.close();
+        br.close();
+    }
+
+    public static int[] heap = new int[MAXN];
+    public static int size = 0;
+
+    public static void heapInsert(int cur) {
+        int parent = (cur - 1) / 2;
+        while (heap[cur] < heap[parent]) {
+            swap(cur, parent);
+            cur = parent;
+            parent = (cur - 1) / 2;
+        }
+    }
+
+    public static void swap(int i, int j) {
+        int tmp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = tmp;
+    }
+
+    public static void heapify(int cur) {
+        int left = 2 * cur + 1;
+        while (left < size) {
+            int right = left + 1;
+            int minChild = right < size && heap[right] < heap[left] ? right : left;
+            int min = heap[minChild] < heap[cur] ? minChild : cur;
+            if (min == cur) {
+                break;
+            } else {
+                swap(cur, min);
+                cur = min;
+                left = 2 * cur + 1;
+            }
+        }
+    }
+    public static void add(int num) {
+        int cur = size++;
+        heap[cur] = num;
+        heapInsert(cur);
+    }
+
+    public static void pop() {
+        swap(0, --size);
+        heapify(0);
+    }
+
+    public static int compute() {
+        int max = 0;
+        Arrays.sort(line, 0, n, (a, b) -> a[0] - b[0]);
+
+        for (int i = 0; i < n; i++) {
+            while (size > 0 && heap[0] <= line[i][0]) pop();
+            add(line[i][1]);
+            max = Math.max(max, size);
+        }
+
+        return max;
+    }
+}
+```
+]
+
+- 时间复杂度：O(nlogn)
+- 空间复杂度：O(n)
 
 === #link(
   "https://leetcode.cn/problems/minimum-operations-to-halve-array-sum/",
 )[题目3: 将数组和减半的最少操作次数]
 
+给你一个正整数数组 `nums` 。每一次操作中，你可以从 `nums` 中选择 任意
+一个数并将它减小到 *恰好*
+一半。（注意，在后续操作中你可以对减半过的数继续执行操作）
+
+请你返回将 `nums` 数组和 至少 减少一半的 最少 操作数。
+
+#example(
+  "Example",
+)[
+- 输入：`nums = [5,19,8,1]`
+- 输出：`3`
+- 解释：初始 nums 的和为 `5 + 19 + 8 + 1 = 33` 。
+  以下是将数组和减少至少一半的一种方法：
+  - 选择数字 `19` 并减小为 `9.5` 。
+  - 选择数字 `9.5` 并减小为 `4.75` 。
+  - 选择数字 `8` 并减小为 `4` 。
+  - 最终数组为 `[5, 4.75, 4, 1]` ，和为 `5 + 4.75 + 4 + 1 = 14.75` 。
+  - `nums` 的和减小了 `33 - 14.75 = 18.25` ，减小的部分超过了初始数组和的一半，`18.25 >= 33/2 = 16.5` 。
+  - 我们需要 `3` 个操作实现题目要求，所以返回 `3` 。
+  - 可以证明，无法通过少于 `3` 个操作使数组和减少至少一半。
+]
+
+#tip("Tip")[
+`1 <= nums.length <= 10^5`
+`1 <= nums[i] <= 10^7`
+]
+
+==== 解答
+
+#code(caption: [题目3: 将数组和减半的最小操作数])[
+```java
+public class Code03_MinimumOperationsToHalveArraySum {
+    public static int halveArray(int[] nums) {
+        PriorityQueue<Double> heap = new PriorityQueue<>((a, b) -> b.compareTo(a));
+        double sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            heap.add((double) nums[i]);
+            sum += nums[i];
+        }
+        double target = sum / 2;
+
+        int ans = 0;
+        double cur = 0;
+        for (double minus = 0; minus < target; minus += cur) {
+            cur = heap.poll() / 2;
+            heap.add(cur);
+            ans++;
+        }
+        return ans;
+    }
+
+    public static int MAXN = 100001;
+
+    public static long[] heap = new long[MAXN];
+
+    public static int size;
+
+    public static int halveArray2(int[] nums) {
+        size = nums.length;
+        long sum = 0;
+        for (int i = size - 1; i >= 0; i--) {
+            heap[i] = (long) nums[i] << 20;
+            sum += heap[i];
+            heapify(i);
+        }
+        sum /= 2;
+        int ans = 0;
+        for (long minus = 0; minus < sum; ans++) {
+            heap[0] /= 2;
+            minus += heap[0];
+            heapify(0);
+        }
+        return ans;
+    }
+
+    public static void heapify(int i) {
+        int l = i * 2 + 1;
+        while (l < size) {
+            int best = l + 1 < size && heap[l + 1] > heap[l] ? l + 1 : l;
+            best = heap[best] > heap[i] ? best : i;
+            if (best == i) {
+                break;
+            }
+            swap(best, i);
+            i = best;
+            l = i * 2 + 1;
+        }
+    }
+
+    public static void swap(int i, int j) {
+        long tmp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = tmp;
+    }
+}
+```
+]
