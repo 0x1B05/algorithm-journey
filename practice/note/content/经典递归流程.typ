@@ -132,6 +132,48 @@ grid = [
 - `grid[i][j]` 的值为 `'0'` 或 `'1'`
 ]
 
+==== 解答
+#code(caption: [岛屿数目 - 解答])[
+```java
+public class Code01_NumberOfIslands {
+    public static int numIslands(char[][] grid) {
+        int num = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j]=='1') {
+                    ++num;
+                    infect(grid,i,j);
+                }
+            }
+        }
+
+        return num;
+    }
+
+    public static void infect(char[][] grid, int i, int j){
+        if( i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != '1' ){
+            return;
+        }
+        // 标记走过的点为0
+        grid[i][j] = 0;
+        infect(grid, i-1, j);
+        infect(grid, i+1, j);
+        infect(grid, i, j+1);
+        infect(grid, i, j-1);
+    }
+}
+```
+]
+
+#tip("Tip")[
+- 时间复杂度: O(n\*m)。 想一个格子会被谁调用(上下左右邻居，最多被访问4次，但是这么多邻居调用都会直接退出，每次都是O(1))。
+  - 大流程，每个格子访问1次O(n\*m)
+  - 总共的 infect 每个格子最多访问4次O(n\*m)
+  - O(n\*m)+O(n\*m)
+- 和并查集一样，但是常数时间会更好。
+]
+
+
 === #link("https://leetcode.cn/problems/surrounded-regions/")[题目2: 被围绕的区域]
 
 给你一个 `m x n` 的矩阵 board ，由若干字符 `'X'` 和 `'O'` ，找到所有被 `'X'` 围绕的区域，并将这些区域里所有的 `'O'` 用 `'X'` 填充。
@@ -164,6 +206,64 @@ board = [
 - `board[i][j]` 为 `'X'` 或 `'O'`
 ]
 
+==== 解答
+把边界的`'O'`进行感染，把`'O'`->`'F'`，然后遍历矩阵，把`'O'`->`'X'`，最后把`'F'`->`'O'`。
+
+#code(caption: [被围绕的区域 - 解答])[
+```java
+class Code02_SurroundedRegions {
+    public void solve(char[][] board) {
+        int n = board.length;
+        int m = board[0].length;
+
+        for (int i = 0; i < n; i++) {
+            if(board[i][0]=='O'){
+                infect(board, i, 0, 'O', 'F');
+            }
+            if(board[i][m-1]=='O'){
+                infect(board, i, m-1, 'O', 'F');
+            }
+        }
+
+        for (int j = 1; j < m-1; j++) {
+            if(board[0][j]=='O'){
+                infect(board, 0, j, 'O', 'F');
+            }
+            if(board[n-1][j]=='O'){
+                infect(board, n-1, j, 'O', 'F');
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (board[i][j]=='O') {
+                    board[i][j] = 'X';
+                }
+                if (board[i][j]=='F') {
+                    board[i][j] = 'O';
+                }
+            }
+        }
+    }
+
+    public static void infect(char[][] board, int i, int j, char dest, char infected){
+        if( i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] != dest ){
+            return;
+        }
+
+        board[i][j] = infected;
+        infect(board, i-1, j, dest, infected);
+        infect(board, i+1, j, dest, infected);
+        infect(board, i, j+1, dest, infected);
+        infect(board, i, j-1, dest, infected);
+    }
+}
+```
+]
+
+#tip("Tip")[
+注意什么时候只要用循环就可以了。有时不需要感染。
+]
 
 === #link("https://leetcode.cn/problems/making-a-large-island/")[题目3: 最大人工岛]
 
@@ -194,8 +294,89 @@ board = [
 - `grid[i][j] 为 0 或 1`
 ]
 
-=== #link("https://leetcode.cn/problems/bricks-falling-when-hit/")[题目4: 打砖块]
+==== 解答
+#code(caption: [最大人工岛 - 解答])[
+```java
+public class Code03_MakingLargeIsland {
 
+    public static int largestIsland(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+
+        int id = 2;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    infect(grid, i, j, id++);
+                }
+            }
+        }
+
+        int ans = 0;
+        int[] sizes = new int[id];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] > 1) {
+                    ans = Math.max(ans, ++sizes[grid[i][j]]);
+                }
+            }
+        }
+
+        // 讨论所有的0，变成1，能带来的最大岛的大小
+        boolean[] visited = new boolean[id];
+        int up, down, left, right, merge;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 0) {
+                    up = i > 0 ? grid[i - 1][j] : 0;
+                    down = i + 1 < n ? grid[i + 1][j] : 0;
+                    left = j > 0 ? grid[i][j - 1] : 0;
+                    right = j + 1 < m ? grid[i][j + 1] : 0;
+                    visited[up] = true;
+                    merge = 1 + sizes[up];
+                    if (!visited[down]) {
+                        merge += sizes[down];
+                        visited[down] = true;
+                    }
+                    if (!visited[left]) {
+                        merge += sizes[left];
+                        visited[left] = true;
+                    }
+                    if (!visited[right]) {
+                        merge += sizes[right];
+                        visited[right] = true;
+                    }
+                    ans = Math.max(ans, merge);
+                    visited[up] = false;
+                    visited[down] = false;
+                    visited[left] = false;
+                    visited[right] = false;
+                }
+            }
+        }
+        return ans;
+    }
+
+    public static void infect(int[][] grid, int i, int j, int id) {
+        if (i < 0 || i == n || j < 0 || j == m || grid[i][j] != 1) {
+            return;
+        }
+
+        grid[i][j] = id;
+        dfs(grid, i - 1, j, id);
+        dfs(grid, i + 1, j, id);
+        dfs(grid, i, j - 1, id);
+        dfs(grid, i, j + 1, id);
+    }
+}
+```
+]
+
+#tip("Tip")[
+时间复杂度：O(n\*m)
+]
+
+=== #link("https://leetcode.cn/problems/bricks-falling-when-hit/")[题目4: 打砖块]
 有一个 `m x n` 的二元网格 `grid` ，其中 `1` 表示砖块，`0` 表示空白。砖块 稳定（不会掉落）的前提是：
 
 - 一块砖直接连接到网格的顶部，或者
@@ -242,3 +423,69 @@ board = [
 - 所有 `(xi, yi)` 互不相同
 ]
 
+==== 解答
+1. 炮位-1
+2. 天花板感染
+3. 时光倒流处理炮弹(炮弹逆着看，加上去看看天花板上面的砖块数量是否有变化)
+
+#code(caption: [打砖块 - 解答])[
+```java
+public class Code04_BricksFallingWhenHit {
+    public int[] hitBricks(int[][] grid, int[][] hits) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int[] ans = new int[hits.length];
+        // 只有一行
+        if (n==1){
+            return ans;
+        }
+
+        for (int[] hit : hits) {
+            grid[hit[0]][hit[1]]--;
+        }
+
+        for (int j = 0; j < m; j++) {
+            if(grid[0][j]==1){
+                infect(grid, 0, j);
+            }
+        }
+
+        // 时光倒流
+        for (int cur = hits.length-1; cur >= 0; cur--) {
+            int x = hits[cur][0];
+            int y = hits[cur][1];
+            grid[x][y]++;
+
+            // 当前是1
+            // 上下左右存在2 或者 当前是第一行
+            boolean worth = grid[x][y] == 1 && (
+                x == 0
+                || (x-1 >= 0 && grid[x - 1][y] == 2)
+                || (x+1 < n && grid[x + 1][y] == 2)
+                || (y-1 >= 0 && grid[x][y - 1] == 2)
+                || (y+1 < m && grid[x][y + 1] == 2)
+            );
+            if(worth){
+                int infected = infect(grid, x, y);
+                ans[cur] = infected-1;
+            }
+        }
+        return ans;
+    }
+
+    // 感染数量
+    public static int infect(int[][] grid, int i, int j){
+        if( i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != 1){
+            return 0;
+        }
+
+        grid[i][j] = 2;
+        return 1 + infect(grid, i-1, j) + infect(grid, i+1, j) + infect(grid, i, j+1) + infect(grid, i, j-1);
+    }
+}
+```
+]
+
+#tip("Tip")[
+可以用并查集，但是洪水填充最快。
+]
