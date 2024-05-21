@@ -35,7 +35,7 @@
 #include "content/预备知识.typ"
 #include "content/排序.typ"
 #include "content/二分查找.typ"
-#include "content/同余原理.typ"
+#include "content/数论.typ"
 #include "content/快速幂.typ"
 #include "content/前缀信息.typ"
 #include "content/KMP.typ"

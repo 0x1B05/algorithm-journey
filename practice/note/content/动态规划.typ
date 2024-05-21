@@ -1395,103 +1395,833 @@ public class Code01_DistinctSubsequences {
 #code(caption: [题目8: 编辑距离])[
 ```java
 public class Code02_EditDistance {
-	public int minDistance(String word1, String word2) {
-		return editDistance2(word1, word2, 1, 1, 1);
-	}
+    public int minDistance(String word1, String word2) {
+        return editDistance2(word1, word2, 1, 1, 1);
+    }
 
-	// 原初尝试版
-	// a : str1中插入1个字符的代价
-	// b : str1中删除1个字符的代价
-	// c : str1中改变1个字符的代价
-	// 返回从str1转化成str2的最低代价
-	public static int editDistance1(String str1, String str2, int a, int b, int c) {
-		char[] s1 = str1.toCharArray();
-		char[] s2 = str2.toCharArray();
-		int n = s1.length;
-		int m = s2.length;
-		// dp[i][j] :
-		// s1[前缀长度为i]想变成s2[前缀长度为j]，至少付出多少代价
-		int[][] dp = new int[n + 1][m + 1];
-		for (int i = 1; i <= n; i++) {
-			dp[i][0] = i * b;
-		}
-		for (int j = 1; j <= m; j++) {
-			dp[0][j] = j * a;
-		}
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= m; j++) {
-				int p1 = Integer.MAX_VALUE;
-				if (s1[i - 1] == s2[j - 1]) {
-					p1 = dp[i - 1][j - 1];
-				}
-				int p2 = Integer.MAX_VALUE;
-				if (s1[i - 1] != s2[j - 1]) {
-					p2 = dp[i - 1][j - 1] + c;
-				}
-				int p3 = dp[i][j - 1] + a;
-				int p4 = dp[i - 1][j] + b;
-				dp[i][j] = Math.min(Math.min(p1, p2), Math.min(p3, p4));
-			}
-		}
-		return dp[n][m];
-	}
+    // 原初尝试版
+    // a : str1中插入1个字符的代价
+    // b : str1中删除1个字符的代价
+    // c : str1中改变1个字符的代价
+    // 返回从str1转化成str2的最低代价
+    public static int editDistance1(String str1, String str2, int a, int b, int c) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        int m = s2.length;
+        // dp[i][j] :
+        // s1[前缀长度为i]想变成s2[前缀长度为j]，至少付出多少代价
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            dp[i][0] = i * b;
+        }
+        for (int j = 1; j <= m; j++) {
+            dp[0][j] = j * a;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                int p1 = Integer.MAX_VALUE;
+                if (s1[i - 1] == s2[j - 1]) {
+                    p1 = dp[i - 1][j - 1];
+                }
+                int p2 = Integer.MAX_VALUE;
+                if (s1[i - 1] != s2[j - 1]) {
+                    p2 = dp[i - 1][j - 1] + c;
+                }
+                int p3 = dp[i][j - 1] + a;
+                int p4 = dp[i - 1][j] + b;
+                dp[i][j] = Math.min(Math.min(p1, p2), Math.min(p3, p4));
+            }
+        }
+        return dp[n][m];
+    }
 
-	// 枚举小优化版
-	public static int editDistance2(String str1, String str2, int a, int b, int c) {
-		char[] s1 = str1.toCharArray();
-		char[] s2 = str2.toCharArray();
-		int n = s1.length;
-		int m = s2.length;
-		// dp[i][j] :
-		// s1[前缀长度为i]想变成s2[前缀长度为j]，至少付出多少代价
-		int[][] dp = new int[n + 1][m + 1];
-		for (int i = 1; i <= n; i++) {
-			dp[i][0] = i * b;
-		}
-		for (int j = 1; j <= m; j++) {
-			dp[0][j] = j * a;
-		}
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= m; j++) {
-				if (s1[i - 1] == s2[j - 1]) {
-					dp[i][j] = dp[i - 1][j - 1];
-				} else {
-					dp[i][j] = Math.min(Math.min(dp[i - 1][j] + b, dp[i][j - 1] + a), dp[i - 1][j - 1] + c);
-				}
-			}
-		}
-		return dp[n][m];
-	}
+    // 枚举小优化版
+    public static int editDistance2(String str1, String str2, int a, int b, int c) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        int m = s2.length;
+        // dp[i][j] :
+        // s1[前缀长度为i]想变成s2[前缀长度为j]，至少付出多少代价
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            dp[i][0] = i * b;
+        }
+        for (int j = 1; j <= m; j++) {
+            dp[0][j] = j * a;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j] + b, dp[i][j - 1] + a), dp[i - 1][j - 1] + c);
+                }
+            }
+        }
+        return dp[n][m];
+    }
 
-	// 空间压缩
-	public static int editDistance3(String str1, String str2, int a, int b, int c) {
-		char[] s1 = str1.toCharArray();
-		char[] s2 = str2.toCharArray();
-		int n = s1.length;
-		int m = s2.length;
-		int[] dp = new int[m + 1];
-		for (int j = 1; j <= m; j++) {
-			dp[j] = j * a;
-		}
-		for (int i = 1, leftUp, backUp; i <= n; i++) {
-			leftUp = (i - 1) * b;
-			dp[0] = i * b;
-			for (int j = 1; j <= m; j++) {
-				backUp = dp[j];
-				if (s1[i - 1] == s2[j - 1]) {
-					dp[j] = leftUp;
-				} else {
-					dp[j] = Math.min(Math.min(dp[j] + b, dp[j - 1] + a), leftUp + c);
-				}
-				leftUp = backUp;
-			}
-		}
-		return dp[m];
-	}
+    // 空间压缩
+    public static int editDistance3(String str1, String str2, int a, int b, int c) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        int m = s2.length;
+        int[] dp = new int[m + 1];
+        for (int j = 1; j <= m; j++) {
+            dp[j] = j * a;
+        }
+        for (int i = 1, leftUp, backUp; i <= n; i++) {
+            leftUp = (i - 1) * b;
+            dp[0] = i * b;
+            for (int j = 1; j <= m; j++) {
+                backUp = dp[j];
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[j] = leftUp;
+                } else {
+                    dp[j] = Math.min(Math.min(dp[j] + b, dp[j - 1] + a), leftUp + c);
+                }
+                leftUp = backUp;
+            }
+        }
+        return dp[m];
+    }
 
 }
 ```
 ]
 
 == 从递归入手三位动态规划
+- 尝试函数有1个可变参数可以完全决定返回值，进而可以改出1维动态规划表的实现
+- 尝试函数有2个可变参数可以完全决定返回值，那么就可以改出2维动态规划的实现
+- 尝试函数有3个可变参数可以完全决定返回值，那么就可以改出3维动态规划的实现
 
+大体过程都是：
+
++ 写出尝试递归
++ 记忆化搜索(从顶到底的动态规划)
++ 严格位置依赖的动态规划(从底到顶的动态规划)
++ 空间、时间的更多优化
+
+=== #link("https://leetcode.cn/problems/ones-and-zeroes/")[题目1: 一和零]
+
+给你一个二进制字符串数组 `strs` 和两个整数 `m` 和 `n` 。
+请你找出并返回 `strs` 的最大子集的长度，该子集中 最多 有 `m` 个 `0` 和 `n` 个 `1` 。
+
+#example("Example")[
+- 输入：`strs = ["10", "0001", "111001", "1", "0"]`, `m = 5`, `n = 3`
+- 输出：`4`
+- 解释：最多有 5 个 0 和 3 个 1 的最大子集是 {"10","0001","1","0"} ，因此答案是 4 。
+其他满足题意但较小的子集包括 `{"0001","1"}` 和 `{"10","1","0"}` 。`{"111001"}` 不满足题意，因为它含 `4` 个 `1` ，大于 `n` 的值 `3` 。
+]
+
+#example("Example")[
+- 输入：`strs = ["10", "0", "1"]`, `m = 1`, `n = 1`
+- 输出：`2`
+- 解释：最大的子集是 `{"0", "1"}` ，所以答案是 `2` 。
+]
+
+#tip("Tip")[
+- `1 <= strs.length <= 600`
+- `1 <= strs[i].length <= 100`
+- `strs[i]` 仅由 `'0'` 和 `'1'` 组成
+- `1 <= m, n <= 100`
+]
+
+==== 解答
+
+#code(caption: [题目1: 一和零])[
+```java
+public class Code01_OnesAndZeroes {
+    public static int zeros;
+    public static int ones;
+
+    public static void count(String str){
+        zeros = 0;
+        ones = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if(str.charAt(i)=='0'){
+                zeros++;
+            }else if(str.charAt(i)=='1'){
+                ones++;
+            }
+        }
+    }
+
+    public static int findMaxForm1(String[] strs, int m, int n) {
+        return f1(strs, 0, m, n);
+    }
+
+    // strs[i...] 自由选择，0的数量不超过z，1的数量不超过o
+    // 最多能选择多少字符串
+    public static int f1(String[] strs, int cur, int z, int o){
+        if(cur==strs.length){
+            return 0;
+        }
+
+        // 不选择当前字符串
+        int p1 = f1(strs, cur+1, z, o);
+        // 选择当前字符串
+        int p2 = 0;
+        count(strs[cur]);
+        if(zeros<=z && ones<=o){
+            p2 = 1 + f1(strs, cur+1, z-zeros, o-ones);
+        }
+
+        return Math.max(p1, p2);
+    }
+
+    // 记忆化搜索
+    public static int findMaxForm2(String[] strs, int m, int n) {
+        int[][][] dp = new int[strs.length][m+1][n+1];
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                for (int k = 0; k < dp[0][0].length; k++) {
+                    dp[i][j][k] = -1;
+                }
+            }
+        }
+        return f2(dp, strs, 0, m, n);
+    }
+    public static int f2(int[][][] dp, String[] strs, int cur, int z, int o){
+        if(cur==strs.length){
+            return 0;
+        }
+
+        if(dp[cur][z][o]!=-1){
+            return dp[cur][z][o];
+        }
+
+        // 不选择当前字符串
+        int p1 = f2(dp, strs, cur+1, z, o);
+        // 选择当前字符串
+        int p2 = 0;
+        count(strs[cur]);
+        if(zeros<=z && ones<=o){
+            p2 = 1 + f2(dp, strs, cur+1, z-zeros, o-ones);
+        }
+        dp[cur][z][o] = Math.max(p1, p2);
+
+        return dp[cur][z][o];
+    }
+
+    // 严格表依赖
+    public static int findMaxForm3(String[] strs, int m, int n) {
+        int len = strs.length;
+        // 来到 strs[cur...]，要0的数量<=m，1的数量<=n 的最大长度
+        int[][][] dp = new int[len+1][m+1][n+1];
+        // base case: dp[len][..][..]=0
+        // 每一层依赖上一层
+        for (int cur = len-1; cur >= 0; cur--) {
+            count(strs[cur]);
+            for (int z = 0; z <= m; z++) {
+                for (int o = 0; o <= n; o++) {
+                    int p1 = dp[cur+1][z][o];
+                    int p2 = 0;
+                    if(z>=zeros && o >=ones){
+                        p2 = 1 + dp[cur+1][z-zeros][o-ones];
+                    }
+                    dp[cur][z][o] = Math.max(p1, p2);
+                }
+            }
+        }
+
+        return dp[0][m][n];
+    }
+
+    // 空间压缩
+    public static int findMaxForm4(String[] strs, int m, int n) {
+        // 代表cur==len
+        int[][] dp = new int[m+1][n+1];
+        // 第i层依赖第i+1层当前位置，以及左下角某个值
+        // 从右上到左下进行空间压缩
+        for (String s : strs) {
+            // 每个字符串逐渐遍历即可
+            // 更新每一层的表
+            // 和之前的遍历没有区别
+            count(s);
+            for (int z = m; z >= zeros; z--) {
+                for (int o = n; o >= ones; o--) {
+                  dp[z][o] = Math.max(dp[z][o], 1 + dp[z - zeros][o - ones]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+]
+
+=== #link("https://leetcode.cn/problems/profitable-schemes/")[题目2: 盈利计划]
+
+集团里有 `n` 名员工，他们可以完成各种各样的工作创造利润。第 `i` 种工作会产生 `profit[i]` 的利润，它要求 `group[i]` 名成员共同参与。如果成员参与了其中一项工作，就不能参与另一项工作。工作的任何至少产生 `minProfit` 利润的子集称为 盈利计划 。并且工作的成员总数最多为 `n` 。
+
+有多少种计划可以选择？因为答案很大，所以 返回结果模 `10^9 + 7` 的值。
+
+#example("Example")[
+- 输入：`n = 5`, `minProfit = 3`, `group = [2,2]`, `profit = [2,3]`
+- 输出：`2`
+- 解释：至少产生 3 的利润，该集团可以完成工作 0 和工作 1 ，或仅完成工作 1 。
+
+总的来说，有两种计划。
+]
+
+#tip("Tip")[
+- 输入：`n = 10`, `minProfit = 5`, `group = [2,3,5]`, `profit = [6,7,8]`
+- 输出：`7`
+- 解释：至少产生 `5` 的利润，只要完成其中一种工作就行，所以该集团可以完成任何工作。
+
+有 7 种可能的计划：(0)，(1)，(2)，(0,1)，(0,2)，(1,2)，以及 (0,1,2) 。
+]
+
+#tip("Tip")[
+- `1 <= n <= 100`
+- `0 <= minProfit <= 100`
+- `1 <= group.length <= 100`
+- `1 <= group[i] <= 100`
+- `profit.length == group.length`
+- `0 <= profit[i] <= 100`
+]
+
+==== 解答
+
+#code(caption: [题目2: 盈利计划])[
+```java
+public class Code02_ProfitableSchemes {
+   public static int MOD = 1000000007;
+
+    public int profitableSchemes1(int n, int minProfit, int[] group, int[] profit) {
+        return f1(0, group, profit,n, minProfit);
+    }
+    // 来到第job份工作,要求剩下的工作n个人至少产生minProfit的利润
+    // 返回方案数
+    public static int f1(int job, int[] group, int[] profit,int n, int minProfit){
+        int len = profit.length;
+
+        // 如果没人了或者工作选完了
+        if(n < 0 || job==len){
+            return minProfit > 0 ? 0:1;
+        }
+        // 不做当前这份工作
+        int p1 = f1(job+1, group, profit, n, minProfit);
+        // 做当前这份工作
+        int p2 = 0;
+        if(n-group[job]>=0){
+            p2= f1(job+1, group, profit, n-group[job], minProfit-profit[job]);
+        }
+        return p1+p2;
+    }
+
+    public int profitableSchemes2(int n, int minProfit, int[] group, int[] profit) {
+        int len = profit.length;
+        int[][][] dp = new int[len+1][n+1][minProfit+1];
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                for (int k = 0; k < dp[0][0].length; k++) {
+                    dp[i][j][k] = -1;
+                }
+            }
+        }
+        return f2(dp, 0, group, profit,n, minProfit);
+    }
+
+    public static int f2(int[][][] dp, int job, int[] group, int[] profit,int n, int minProfit){
+        int len = profit.length;
+
+        // 如果没人了或者工作选完了
+        if(n < 0 || job==len){
+            return minProfit > 0 ? 0:1;
+        }
+
+        if(dp[job][n][minProfit]!=-1){
+            return dp[job][n][minProfit];
+        }
+
+        // 不做当前这份工作
+        int p1 = f2(dp, job+1, group, profit, n, minProfit);
+        // 做当前这份工作
+        int p2 = 0;
+        if(n-group[job]>=0){
+            p2= f2(dp, job+1, group, profit, n-group[job], Math.max(0,minProfit-profit[job]));
+        }
+        dp[job][n][minProfit] = (p1+p2) % MOD;
+        return dp[job][n][minProfit];
+    }
+
+    // 严格表结构+空间压缩
+    public int profitableSchemes3(int n, int minProfit, int[] group, int[] profit) {
+        int len = profit.length;
+        // i = 没有工作的时候，i == g.length
+        int[][] dp = new int[n + 1][minProfit + 1];
+
+        // 工作选完之后，还有人但是已经不用再盈利
+        for (int person = 0; person <= n; person++) {
+            dp[person][0] = 1;
+        }
+
+        for (int job = len-1; job >= 0; job--) {
+            for (int person = n; person >= 0; person--) {
+                for (int prof = minProfit; prof >= 0; prof--) {
+                    int p1 = dp[person][prof];
+                    int p2 = 0;
+                    if((person-group[job])>=0){
+                        p2 = dp[person-group[job]][Math.max(0,prof-profit[job])];
+                    }
+                    dp[person][prof] = (p1+p2)%MOD;
+                }
+            }
+        }
+        return dp[n][minProfit];
+    }
+}
+```
+]
+
+=== #link("https://leetcode.cn/problems/knight-probability-in-chessboard/")[题目3: 骑士在棋盘上的概率]
+
+在一个 `n x n` 的国际象棋棋盘上，一个骑士从单元格 `(row, column)` 开始，并尝试进行 `k` 次移动。行和列是 从 `0` 开始 的，所以左上单元格是 `(0,0)` ，右下单元格是 `(n - 1, n - 1)` 。
+
+象棋骑士有`8`种可能的走法(类似象棋中的🐎的走法)。每次移动在基本方向上是两个单元格，然后在正交方向上是一个单元格。每次骑士要移动时，它都会随机从8种可能的移动中选择一种(即使棋子会离开棋盘)，然后移动到那里。骑士继续移动，直到它走了 `k` 步或离开了棋盘。
+
+返回 骑士在棋盘停止移动后仍留在棋盘上的概率 。
+
+#example("Example")[
+- 输入: `n = 3`, `k = 2`, `row = 0`, `column = 0`
+- 输出: `0.0625`
+- 解释: 有两步(到`(1,2)`，`(2,1)`)可以让骑士留在棋盘上。
+
+在每一个位置上，也有两种移动可以让骑士留在棋盘上。骑士留在棋盘上的总概率是0.0625。
+]
+
+#example("Example")[
+- 输入: `n = 1`, `k = 0`, `row = 0`, `column = 0`
+- 输出: `1.00000`
+]
+
+#tip("Tip")[
+- `1 <= n <= 25`
+- `0 <= k <= 100`
+- `0 <= row, column <= n - 1`
+]
+
+==== 解答
+#code(caption: [骑士在棋盘上的概率 - 解答])[
+```java
+public class Code03_KnightProbabilityInChessboard {
+    public double knightProbability(int n, int k, int row, int col) {
+        double[][][] dp = new double[k+1][n][n];
+        for (int t = 0; t <= k; t++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dp[i][j][t] = -1;
+                }
+            }
+        }
+
+        return f(n, row, col, k, dp);
+    }
+
+    // 从(i,j)出发还有k步要走，返回最后在棋盘上的概率
+    public static double f(int n, int i, int j, int k, double[][][] dp) {
+        if (i < 0 || i >= n || j < 0 || j >= n) {
+            return 0;
+        }
+        if (dp[i][j][k] != -1) {
+            return dp[i][j][k];
+        }
+
+        double ans = 0;
+        if(k==0){
+            return 1;
+        }else{
+            ans += (f(n, i - 2, j + 1, k - 1, dp) / 8);
+            ans += (f(n, i - 1, j + 2, k - 1, dp) / 8);
+            ans += (f(n, i + 1, j + 2, k - 1, dp) / 8);
+            ans += (f(n, i + 2, j + 1, k - 1, dp) / 8);
+            ans += (f(n, i + 2, j - 1, k - 1, dp) / 8);
+            ans += (f(n, i + 1, j - 2, k - 1, dp) / 8);
+            ans += (f(n, i - 1, j - 2, k - 1, dp) / 8);
+            ans += (f(n, i - 2, j - 1, k - 1, dp) / 8);
+        }
+        dp[i][j][k] = ans;
+        return ans;
+    }
+}
+```
+]
+
+=== #link("https://leetcode.cn/problems/paths-in-matrix-whose-sum-is-divisible-by-k/")[题目4: 矩阵中和能被 K 整除的路径]
+
+给你一个下标从 0 开始的 `m x n` 整数矩阵 `grid` 和一个整数 k 。你从起点 `(0, 0)` 出发，每一步只能往 下 或者往 右 ，你想要到达终点 `(m - 1, n - 1)` 。
+
+请你返回路径和能被 `k` 整除的路径数目，由于答案可能很大，返回答案对 `10^9 + 7` 取余 的结果。
+
+#example("Example")[
+- 输入：
+  ```
+  grid = [
+    [5,2,4],
+    [3,0,5],
+    [0,7,2]
+  ]
+  k = 3
+  ```
+- 输出：2
+- 解释：有两条路径满足路径上元素的和能被 `k` 整除。
+  - 第一条路径和为 5 + 2 + 4 + 5 + 2 = 18 ，能被 3 整除。
+  - 第二条路径和为 5 + 3 + 0 + 5 + 2 = 15 ，能被 3 整除。
+]
+
+#example("Example")[
+- 输入：`grid = [[0,0]]`, `k = 5`
+- 输出：`1`
+- 解释：红色标注的路径和为 0 + 0 = 0 ，能被 5 整除。
+]
+
+#example("Example")[
+- 输入：`grid = [[7,3,4,9],[2,3,6,2],[2,3,7,0]]`, `k = 1`
+- 输出：`10`
+- 解释：每个数字都能被 1 整除，所以每一条路径的和都能被 `k` 整除。
+]
+
+#tip("Tip")[
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 5 * 10^4`
+- `1 <= m * n <= 5 * 10^4`
+- `0 <= grid[i][j] <= 100`
+- `1 <= k <= 50`
+]
+
+==== 解答
+
+`(k + r - (grid[x][y] % k)) % k`解析：
+来到`(x, y)`位置，当前位置加上剩下的要凑出余数r。
+#example("Example")[
+- `k=7`,`r=3`:当前加上剩下的要凑出余数`3`
+  - 当`grid[x][y]%k = 2<3`,剩下的要余`1`
+  - 当`grid[x][y]%k = 4>3`,剩下的要余`7+3-4=6`
+]
+
+#code(caption: [K 整除的路径 - 解答])[
+```java
+public class Code04_PathsDivisibleByK {
+    public static int MOD = 1000000007;
+
+    public static int numberOfPaths1(int[][] grid, int k) {
+        return f1(grid, k, 0, 0, 0);
+    }
+
+    // 从(i,j)出发，最终一定要走到右下角(n-1,m-1)，有多少条路径，累加和%k是r
+    public static int f1(int[][] grid, int k, int x, int y, int r){
+        int n = grid.length;
+        int m = grid[0].length;
+        if (x==n-1 && y==m-1) {
+            return grid[x][y]%k==r?1:0;
+        }
+        int ans = 0;
+        int need = (k+r-(grid[x][y]%k))%k;
+        int p1=0, p2=0;
+        // 向下走
+        if(x+1<n){
+            p1 = f1(grid, k, x+1, y, need);
+        }
+        // 向右走
+        if(y+1<n){
+            p2 = f1(grid, k, x+1, y, need);
+        }
+        ans = (p1+p2)%MOD;
+        return ans;
+    }
+
+    public static int numberOfPaths2(int[][] grid, int k) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][][] dp = new int[k][n][m];
+
+        for (int r = 0; r < k; r++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    dp[r][i][j] = -1;
+                }
+            }
+        }
+
+        return f2(dp, grid, k, 0, 0, 0);
+    }
+
+    // 从(i,j)出发，最终一定要走到右下角(n-1,m-1)，有多少条路径，累加和%k是r
+    public static int f2(int[][][] dp, int[][] grid, int k, int x, int y, int r){
+        int n = grid.length;
+        int m = grid[0].length;
+
+        if(dp[r][x][y]!=-1){
+            return dp[r][x][y];
+        }
+
+        if (x==n-1 && y==m-1) {
+            return grid[x][y]%k==r?1:0;
+        }
+        int need = (k+r-grid[x][y]%k)%k;
+        int p1=0, p2=0;
+
+        // 向下走
+        if(x+1<n){
+            p1 = f2(dp, grid, k, x+1, y, need);
+        }
+        // 向右走
+        if(y+1<m){
+            p2 = f2(dp, grid, k, x, y+1, need);
+        }
+        dp[r][x][y] = (p1+p2)%MOD;
+        return dp[r][x][y];
+    }
+
+    public static int numberOfPaths3(int[][] grid, int k) {
+        int n = grid.length;
+        int m = grid[0].length;
+        // 从(i,j)出发，最终一定要走到右下角(n-1,m-1)，有多少条路径，累加和%k是r
+        int[][][] dp = new int[n][m][k];
+        dp[n-1][m-1][grid[n-1][m-1]%k] = 1;
+
+        // 最后一列，从下到上依赖
+        for (int i = n-2; i >= 0; i--) {
+            for (int r = 0; r < k; r++) {
+                int need = (k+r-grid[i][m-1]%k)%k;
+                dp[i][m-1][r] = dp[i+1][m-1][need];
+            }
+        }
+
+        // 最后一行，从右到左依赖
+        for (int j = m-2; j >= 0; j--) {
+            for (int r = 0; r < k; r++) {
+                int need = (k+r-grid[n-1][j]%k)%k;
+                dp[n-1][j][r] = dp[n-1][j+1][need];
+            }
+        }
+
+        for (int i = n-2; i >= 0; i--) {
+            for (int j = m-2; j >= 0; j--) {
+                for (int r = 0; r < k; r++) {
+                    int need = (k+r-grid[i][j]%k)%k;
+                    // 依赖右边
+                    int p1 = dp[i][j+1][need];
+                    // 依赖下边
+                    int p2 = dp[i+1][j][need];
+                    dp[i][j][r] = (p1+p2)%MOD;
+                }
+            }
+        }
+
+        return dp[0][0][0];
+    }
+}
+```
+]
+
+#tip("Tip")[
+表依赖可以看成一个二维坐标，每个坐标格子里面有个k层的柜子。
+]
+
+=== #link("https://leetcode.cn/problems/scramble-string/")[题目5: 扰乱字符串]
+
+使用下面描述的算法可以扰乱字符串 `s` 得到字符串 `t` ：
+
++ 如果字符串的长度为 `1` ，算法停止
++ 如果字符串的长度 `> 1` ，执行下述步骤：
+    + 在一个随机下标处将字符串分割成两个非空的子字符串。即，如果已知字符串 `s` ，则可以将其分成两个子字符串 `x` 和 `y` ，且满足 `s = x + y` 。
+    + 随机 决定是要「交换两个子字符串」还是要「保持这两个子字符串的顺序不变」。即，在执行这一步骤之后，`s` 可能是 `s = x + y` 或者 `s = y + x` 。
+    + 在 `x` 和 `y` 这两个子字符串上继续从步骤 1 开始递归执行此算法。
+
+给你两个 长度相等 的字符串 `s1` 和 `s2`，判断 `s2` 是否是 `s1` 的扰乱字符串。如果是，返回 `true` ；否则，返回 `false` 。
+
+#example("Example")[
+- 输入：`s1 = "great"`, `s2 = "rgeat"`
+- 输出：`true`
+- 解释：`s1` 上可能发生的一种情形是：
+  ```
+  "great" --> "gr/eat" // 在一个随机下标处分割得到两个子字符串
+  "gr/eat" --> "gr/eat" // 随机决定：「保持这两个子字符串的顺序不变」
+  "gr/eat" --> "g/r / e/at" // 在子字符串上递归执行此算法。两个子字符串分别在随机下标处进行一轮分割
+  "g/r / e/at" --> "r/g / e/at" // 随机决定：第一组「交换两个子字符串」，第二组「保持这两个子字符串的顺序不变」
+  "r/g / e/at" --> "r/g / e/ a/t" // 继续递归执行此算法，将 "at" 分割得到 "a/t"
+  "r/g / e/ a/t" --> "r/g / e/ a/t" // 随机决定：「保持这两个子字符串的顺序不变」
+  ```
+  算法终止，结果字符串和 `s2` 相同，都是 `"rgeat"`
+  这是一种能够扰乱 `s1` 得到 `s2` 的情形，可以认为 `s2` 是 `s1` 的扰乱字符串，返回 `true`
+]
+
+#example("Example")[
+- 输入：`s1 = "abcde"`, `s2 = "caebd"`
+- 输出：`false`
+]
+
+#example("Example")[
+- 输入：`s1 = "a"`, `s2 = "a"`
+- 输出：`true`
+]
+
+#tip("Tip")[
+- s1.length == s2.length
+- 1 <= s1.length <= 30
+- s1 和 s2 由小写英文字母组成
+]
+
+==== 解答
+
+如果两个字符串字符种类一样，对应的数量也一样，两个是否一定互为扰乱串呢？
+不一定！
+#example("Example")[
+- s1: `abcd`
+  + `a bcd`
+  + `ab cd`
+  + `abc d`
+- s2: `cadb`
+
+没法儿！
+]
+
+#code(caption: [扰乱字符串 - 解答])[
+```java
+public class Code05_ScrambleString {
+    public static boolean isScramble1(String str1, String str2) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        return f1(s1, 0, n - 1, s2, 0, n - 1);
+    }
+
+    // s1[l1....r1]
+    // s2[l2....r2]
+    // 保证l1....r1与l2....r2
+    // 是不是扰乱串的关系
+    public static boolean f1(char[] s1, int l1, int r1, char[] s2, int l2, int r2) {
+        if (l1 == r1) {
+            // s1[l1..r1]
+            // s2[l2..r2]
+            return s1[l1] == s2[l2];
+        }
+        // s1[l1..i][i+1....r1]
+        // s2[l2..j][j+1....r2]
+        // 不交错去讨论扰乱关系
+        for (int i = l1, j = l2; i < r1; i++, j++) {
+            if (f1(s1, l1, i, s2, l2, j) && f1(s1, i + 1, r1, s2, j + 1, r2)) {
+                return true;
+            }
+        }
+        // 交错去讨论扰乱关系
+        // s1[l1..........i][i+1...r1]
+        // s2[l2...j-1][j..........r2]
+        for (int i = l1, j = r2; i < r1; i++, j--) {
+            if (f1(s1, l1, i, s2, j, r2) && f1(s1, i + 1, r1, s2, l2, j - 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 依然暴力尝试，只不过四个可变参数，变成了三个
+    public static boolean isScramble2(String str1, String str2) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        return f2(s1, s2, 0, 0, n);
+    }
+
+    public static boolean f2(char[] s1, char[] s2, int l1, int l2, int len) {
+        if (len == 1) {
+            return s1[l1] == s2[l2];
+        }
+        // s1[l1.......]  len
+        // s2[l2.......]  len
+        // 左 : k个   右: len - k 个
+        for (int k = 1; k < len; k++) {
+            if (f2(s1, s2, l1, l2, k) && f2(s1, s2, l1 + k, l2 + k, len - k)) {
+                return true;
+            }
+        }
+        // 交错！
+        for (int i = l1 + 1, j = l2 + len - 1, k = 1; k < len; i++, j--, k++) {
+            if (f2(s1, s2, l1, j, k) && f2(s1, s2, i, l2, len - k)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isScramble3(String str1, String str2) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        // dp[l1][l2][len] : int 0 -> 没展开过
+        // dp[l1][l2][len] : int -1 -> 展开过，返回的结果是false
+        // dp[l1][l2][len] : int 1 -> 展开过，返回的结果是true
+        int[][][] dp = new int[n][n][n + 1];
+        return f3(s1, s2, 0, 0, n, dp);
+    }
+
+    public static boolean f3(char[] s1, char[] s2, int l1, int l2, int len, int[][][] dp) {
+        if (len == 1) {
+            return s1[l1] == s2[l2];
+        }
+        if (dp[l1][l2][len] != 0) {
+            return dp[l1][l2][len] == 1;
+        }
+        boolean ans = false;
+        for (int k = 1; k < len; k++) {
+            if (f3(s1, s2, l1, l2, k, dp) && f3(s1, s2, l1 + k, l2 + k, len - k, dp)) {
+                ans = true;
+                break;
+            }
+        }
+        if (!ans) {
+            for (int i = l1 + 1, j = l2 + len - 1, k = 1; k < len; i++, j--, k++) {
+                if (f3(s1, s2, l1, j, k, dp) && f3(s1, s2, i, l2, len - k, dp)) {
+                    ans = true;
+                    break;
+                }
+            }
+        }
+        dp[l1][l2][len] = ans ? 1 : -1;
+        return ans;
+    }
+
+    public static boolean isScramble4(String str1, String str2) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int n = s1.length;
+        boolean[][][] dp = new boolean[n][n][n + 1];
+        // 填写len=1层，所有的格子
+        for (int l1 = 0; l1 < n; l1++) {
+            for (int l2 = 0; l2 < n; l2++) {
+                dp[l1][l2][1] = s1[l1] == s2[l2];
+            }
+        }
+        for (int len = 2; len <= n; len++) {
+            // 注意如下的边界条件 : l1 <= n - len l2 <= n - len
+            for (int l1 = 0; l1 <= n - len; l1++) {
+                for (int l2 = 0; l2 <= n - len; l2++) {
+                    for (int k = 1; k < len; k++) {
+                        if (dp[l1][l2][k] && dp[l1 + k][l2 + k][len - k]) {
+                            dp[l1][l2][len] = true;
+                            break;
+                        }
+                    }
+                    if (!dp[l1][l2][len]) {
+                        for (int i = l1 + 1, j = l2 + len - 1, k = 1; k < len; i++, j--, k++) {
+                            if (dp[l1][j][k] && dp[i][l2][len - k]) {
+                                dp[l1][l2][len] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][0][n];
+    }
+}
+```
+]

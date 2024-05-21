@@ -33,8 +33,8 @@ a^32 * a^32 = a^64
 function BINEXP(a, n):
     r = 1
     while n != 0
+        # if n mod 2==1
         if n & 1 == 1
-        = if n mod 2==1
             r = r*a
         a = a*a
         n = n>>1

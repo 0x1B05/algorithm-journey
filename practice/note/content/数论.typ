@@ -1,7 +1,7 @@
 #import "../template.typ": *
 
 #pagebreak()
-= 同余原理
+= 数论
 
 == 最大公约数 and 最小公倍数
 
