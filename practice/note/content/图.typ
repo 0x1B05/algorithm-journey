@@ -445,7 +445,7 @@ public class Code02_TopoSortStaticNowcoder {
 - 图上可能有重边
 ]
 
-=== #link("https://leetcode.cn/problems/Jf1JuT/description/")[ 题目2: 火星词典]
+=== #link("https://leetcode.cn/problems/Jf1JuT/description/")[题目2: 火星词典]
 
 现有一种使用英语字母的外星文语言，这门语言的字母顺序与英语顺序不同。 给定一个字符串列表 `words` ，作为这门语言的词典，`words` 中的字符串已经 按这门新语言的字母顺序进行了排序 。 请你根据该词典还原出此语言中已知的字母顺序，并 _按字母递增顺序_ 排列。若不存在合法字母顺序，返回 `""` 。若存在多种可能的合法字母顺序，返回其中 任意一种 顺序即可。
 
@@ -525,9 +525,9 @@ public class Code02_TopoSortStaticNowcoder {
 3. 如果连接当前的边会形成环，就不要当前的边
 4. 考察完所有边之后/已经够`n-1`条边了，最小生成树的也就得到了
 
-时间复杂度`O(m * log m) + O(n) + O(m)`
+贪心策略，证明略！
 
-==== #link("https://www.luogu.com.cn/problem/P3366")[Kruskal 洛谷模板]
+==== #link("https://www.luogu.com.cn/problem/P3366")[最小生成树洛谷模板]
 
 给出一个无向图，求出最小生成树，如果该图不连通，则输出 `orz`。
 
@@ -556,7 +556,7 @@ public class Code02_TopoSortStaticNowcoder {
 - `1≤Zi≤10^4`
 ]
 
-#code(caption: [Kruskal 洛谷模板])[
+#code(caption: [Kruskal])[
 ```java
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -638,6 +638,11 @@ public class Code01_Kruskal {
 ```
 ]
 
+时间复杂度`O(m * log m) + O(n) + O(m)`
+- 排序`O(m * log m)`
+- 建立并查集`O(n)`
+- 遍历所有的边`O(m)`
+
 === Prim算法（不算常用）
 
 1. 解锁的点的集合叫`set`（普通集合）、解锁的边的集合叫`heap`（小根堆）。`set`和`heap`都为空。
@@ -647,9 +652,81 @@ public class Code01_Kruskal {
    2. 如果`x`不在`set`中，边`e`属于最小生成树，把`x`加入`set`，重复步骤3
 4. 当`heap`为空，最小生成树的也就得到了
 
-时间复杂度`O(n + m) + O(m * log m)`
+贪心策略，证明略！
 
-==== Prim算法的优化（比较难，不感兴趣可以跳过）请一定要对堆很熟悉！
+==== #link("https://www.luogu.com.cn/problem/P3366")[最小生成树洛谷模板]
+
+#code(caption: [Prim])[
+```java
+public class Code02_PrimDynamic {
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        while(in.nextToken()!=StreamTokenizer.TT_EOF){
+            ArrayList<ArrayList<int[]>> graph = new ArrayList<>();
+            int n = (int) in.nval;
+            for (int i = 0; i <= n; i++) {
+                graph.add(new ArrayList<>());
+            }
+            in.nextToken();
+            int m = (int) in.nval;
+            for (int i = 0, from, to, weight; i < m; i++) {
+                in.nextToken();
+                from = (int) in.nval;
+                in.nextToken();
+                to = (int) in.nval;
+                in.nextToken();
+                weight = (int) in.nval;
+                graph.get(from).add(new int[]{to,weight});
+                graph.get(to).add(new int[]{from,weight});
+            }
+            int ans = prim(graph);
+            out.println(ans == -1 ? "orz":ans);
+        }
+        out.flush();
+        out.close();
+        br.close();
+    }
+
+    public static int prim(ArrayList<ArrayList<int[]>> graph) {
+        int n = graph.size()-1;
+        int nodeCnt = 0;
+        int ans = 0;
+
+        boolean[] set = new boolean[n+1];
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b)->(a[1]-b[1]));
+
+        for (int[] e : graph.get(1)) {
+            heap.add(e);
+        }
+        set[1] = true;
+        nodeCnt++;
+
+        while(!heap.isEmpty()){
+            int[] top = heap.poll();
+            int to = top[0];
+            int weight = top[1];
+            if(!set[to]){
+                ans+=weight;
+                nodeCnt++;
+                set[to]=true;
+                for (int[] e : graph.get(to)) {
+                    heap.add(e);
+                }
+            }
+        }
+        return nodeCnt == n ? ans:-1;
+    }
+}
+```
+]
+
+时间复杂度`O(n + m) + O(m * log m)`
+- 建图`O(n + m)`
+- 堆的操作，每次`2m`条边弹出，`2m`条边加入`O(m * log m)`
+
+==== Prim算法的优化（比较难，不感兴趣可以跳过）
 
 1. 小根堆里放(节点，到达节点的花费)，根据 到达节点的花费 来组织小根堆
 2. 小根堆弹出(`u`节点，到达`u`节点的花费`y`)，`y`累加到总权重上去，然后考察`u`出发的每一条边
@@ -661,6 +738,470 @@ public class Code01_Kruskal {
      2. 如果`w >= x`，忽略该边
 3. 重复步骤2，直到小根堆为空
 
+#tip("Tip")[
+- 同一个节点的记录不重复入堆！这样堆时间复杂度只和节点数有关。
+- 反向索引表的用处，已知某边的大小要改变，要在堆里找到这个边。
+]
+
 时间复杂度`O(n+m) + O((m+n) * log n)`
 
 ==== #link("https://www.luogu.com.cn/problem/P3366")[Prim 洛谷模板]
+
+#code(caption: [Prim - 反向索引堆])[
+```java
+public class Code02_PrimStatic {
+    public static int MAXN = 5001;
+    public static int MAXM = 400001;
+    public static int n,m;
+
+    // 链式前向星
+    public static int[] head = new int[MAXN];
+    public static int[] to = new int[MAXM];
+    public static int[] next = new int[MAXM];
+    public static int[] weight = new int[MAXM];
+    public static int cnt;
+
+    // 反向索引堆
+    public static int[][] heap = new int[MAXN][2];
+    // where[v] = -1，表示v这个节点，从来没有进入过堆
+    // where[v] = -2，表示v这个节点，已经弹出过了
+    // where[v] = i(>=0)，表示v这个节点，在堆上的i位置
+    public static int[] where = new int[MAXN];
+    public static int heapSize;
+
+    // 最小生成树已经找到的节点数
+    public static int nodeCnt;
+    // 最小生成树的权重和
+    public static int ans;
+
+    public static void build(){
+        cnt = 1;
+        heapSize = 0;
+        nodeCnt = 0;
+        Arrays.fill(head, 1, n+1, 0);
+        Arrays.fill(where, 1, n+1, -1);
+    }
+
+    public static void addEdge(int f, int t, int w){
+        to[cnt] = t;
+        weight[cnt] = w;
+        next[cnt] = head[f];
+        head[f] = cnt++;
+    }
+
+    // 当前处于cur,向上调整成堆
+    public static void heapInsert(int cur){
+        int parent = (cur-1)/2;
+        while(heap[parent][1]>heap[cur][1]){
+            swap(parent, cur);
+            cur = parent;
+            parent = (cur-1)/2;
+        }
+    }
+
+    // 当前处于cur,向下调整成堆
+    public static void heapify(int cur){
+        int left = 2*cur+1;
+        while(left<heapSize){
+            int right = left+1;
+            int minChild = (right<heapSize && heap[right][1]<heap[left][1])?right:left;
+            int min = heap[minChild][1]<heap[cur][1]?minChild:cur;
+            if(min==cur){
+                break;
+            }else{
+                swap(minChild, cur);
+                cur = minChild;
+                left = 2*cur+1;
+            }
+        }
+    }
+
+    // 堆上i位置与j位置交换
+    public static void swap(int i, int j){
+        // where的交换
+        int a = heap[i][0];
+        int b = heap[j][0];
+        where[a] = j;
+        where[b] = i;
+
+        // 元素的交换
+        int[] tmp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = tmp;
+    }
+
+    public static boolean isEmpty(){
+        return heapSize==0 ? true:false;
+    }
+
+    public static int popTo, popWeight;
+    public static void pop(){
+        popTo = heap[0][0];
+        popWeight = heap[0][1];
+        swap(0, --heapSize);
+        heapify(0);
+        where[popTo] = -2;
+        nodeCnt++;
+    }
+
+    // 点在堆上的记录要么新增，要么更新，要么忽略
+    // 当前处理编号为cur的边
+    public static void addOrUpdateOrIgnore(int cur){
+        int t = to[cur];
+        int w = weight[cur];
+        if(where[t]==-1){
+            // 从来没进入过
+            heap[heapSize][0] = t;
+            heap[heapSize][1] = w;
+            where[t] = heapSize++;
+            heapInsert(where[t]);
+        }else if(where[t]>=0){
+            // 已经在堆里
+            // 谁小留谁
+            heap[where[t]][1] = Math.min(heap[where[t]][1], w);
+            heapInsert(where[t]);
+        }
+    }
+
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        while(in.nextToken()!=StreamTokenizer.TT_EOF){
+            n = (int) in.nval;
+            in.nextToken();
+            m = (int) in.nval;
+            build();
+            for (int i = 0, f, t, w; i < m; i++) {
+                in.nextToken();
+                f = (int) in.nval;
+                in.nextToken();
+                t = (int) in.nval;
+                in.nextToken();
+                w = (int) in.nval;
+                addEdge(f, t, w);
+                addEdge(t, f, w);
+            }
+            int ans = prim();
+            out.println(nodeCnt == n ? ans : "orz");
+        }
+        out.flush();
+        out.close();
+        br.close();
+    }
+
+    public static int prim(){
+        // 从1节点出发
+        nodeCnt = 1;
+        where[1] = -2;
+        for (int ei = head[1]; ei > 0; ei=next[ei]) {
+            addOrUpdateOrIgnore(ei);
+        }
+
+        while(!isEmpty()){
+            pop();
+            ans += popWeight;
+            for (int ei = head[popTo]; ei > 0; ei=next[ei]) {
+                addOrUpdateOrIgnore(ei);
+            }
+        }
+        return ans;
+    }
+}
+```
+]
+
+=== #link("https://leetcode.cn/problems/optimize-water-distribution-in-a-village/")[题目3: 水资源分配优化]
+
+村里面一共有 `n` 栋房子。我们希望通过建造水井和铺设管道来为所有房子供水。
+对于每个房子 `i`，我们有两种可选的供水方案：
+- 一种是直接在房子内建造水井: 成本为 `wells[i - 1]` （注意 `-1` ，因为 索引从`0`开始 ）
+- 另一种是从另一口井铺设管道引水，数组 `pipes` 给出了在房子间铺设管道的成本， 其中每个 `pipes[j] = [house1j, house2j, costj]` 代表用管道将 `house1j` 和 `house2j`连接在一起的成本。连接是双向的。
+
+请返回 为所有房子都供水的最低总成本
+
+#example("Example")[
+- 输入: `n = 3`, `wells = [1,2,2]`, `pipes = [[1,2,1],[2,3,1]]`
+- 输出: `3`
+- 解释: 最好的策略是在第一个房子里建造水井（成本为1），然后将其他房子铺设管道连起来（成本为2），所以总成本为3。
+]
+
+#tip("Tip")[
+- `1 <= n <= 10000`
+- `wells.length == n`
+- `0 <= wells[i] <= 10^5`
+- `1 <= pipes.length <= 10000`
+- `1 <= pipes[i][0], pipes[i][1] <= n`
+- `0 <= pipes[i][2] <= 10^5`
+- `pipes[i][0] != pipes[i][1]`
+]
+
+==== 解答:
+
+*假设有一个水源地，所谓的村庄打井的代价相当于从村庄到水源地的管道的代价。*
+
+#code(caption: [水资源分配优化 - 解答])[
+```java
+public class Code03_OptimizeWaterDistribution {
+    public static int MAXN = 10001;
+    // edge[cnt][0] -> 起始点
+    // edge[cnt][1] -> 结束点
+    // edge[cnt][2] -> 代价
+    public static int[][] edge = new int[MAXN << 1][3];
+    // cnt代表边的编号
+    public static int cnt;
+    public static int[] father = new int[MAXN];
+
+    public static void init(int n){
+        cnt = 0;
+        for (int i = 0; i <= n; i++) {
+            father[i] = i;
+        }
+    }
+
+    public static int find(int i){
+        if(i!=father[i]){
+            father[i] = find(father[i]);
+        }
+        return father[i];
+    }
+    public static boolean union(int x, int y){
+        int fx = find(x);
+        int fy = find(y);
+        if(fx!=fy){
+            father[fx] = fy;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static int minCostToSupplyWater(int n, int[] wells, int[][] pipes) {
+        init(n);
+
+        for (int i = 0; i < n; i++, cnt++) {
+            edge[cnt][0] = 0;
+            edge[cnt][1] = i+1;
+            edge[cnt][2] = wells[i];
+        }
+        for (int i = 0; i < pipes.length; i++, cnt++) {
+            edge[cnt][0] = pipes[i][0];
+            edge[cnt][1] = pipes[i][1];
+            edge[cnt][2] = pipes[i][2];
+        }
+
+        Arrays.sort(edge,(a, b)->a[2]-b[2]);
+        int ans = 0;
+        for(int i = 0; i < cnt; i++){
+            if(union(edge[i][0], edge[i][1])){
+                ans += edge[i][2];
+            }
+        }
+        return ans;
+    }
+}
+```
+]
+
+=== #link("https://leetcode.cn/problems/checking-existence-of-edge-length-limited-paths/")[题目4: 检查边长度限制的路径是否存在]
+
+给你一个 `n` 个点组成的无向图边集 `edgeList` ，其中 `edgeList[i] = [ui, vi, disi]` 表示点 `ui` 和点 `vi` 之间有一条长度为 `disi` 的边。请注意，两个点之间可能有 超过一条边 。
+
+给你一个查询数组`queries` ，其中 `queries[j] = [pj, qj, limitj]` ，你的任务是对于每个查询 `queries[j]` ，判断是否存在从 `pj` 到 `qj` 的路径，且这条路径上的每一条边都 严格小于 `limitj` 。
+
+请你返回一个 布尔数组 `answer` ，其中 `answer.length == queries.length` ，当 `queries[j]` 的查询结果为 `true` 时， `answer` 第 `j` 个值为 `true` ，否则为 `false` 。
+
+#example("Example")[
+- 输入：`n = 3`, `edgeList = [[0,1,2],[1,2,4],[2,0,8],[1,0,16]]`, `queries = [[0,1,2],[0,2,5]]`
+- 输出：`[false,true]`
+- 解释：上图为给定的输入数据。注意到 `0` 和 `1` 之间有两条重边，分别为 `2` 和 `16` 。
+  - 对于第一个查询，`0` 和 `1` 之间没有小于 `2` 的边，所以我们返回 `false` 。
+  - 对于第二个查询，有一条路径（`0` -> `1` -> `2`）两条边都小于 `5` ，所以这个查询我们返回 `true` 
+]
+
+#tip("Tip")[
+- `2 <= n <= 10^5`
+- `1 <= edgeList.length, queries.length <= 10^5`
+- `edgeList[i].length == 3`
+- `queries[j].length == 3`
+- `0 <= ui, vi, pj, qj <= n - 1`
+- `ui != vi`
+- `pj != qj`
+- `1 <= disi, limitj <= 10^9`
+]
+==== 解答
+
+#code(caption: [检查边长度限制的路径是否存在 - 解答])[
+```java
+public class Code04_CheckingExistenceOfEdgeLengthLimit {
+    public static int MAXN = 100001;
+    public static int[][] questions = new int[MAXN][4];
+
+    public static int[] father = new int[MAXN];
+    public static void init(int n){
+        for (int i = 0; i < n; i++) {
+            father[i] = i;
+        }
+    }
+    public static int find(int i){
+        if(i!=father[i]){
+            father[i] = find(father[i]);
+        }
+        return father[i];
+    }
+    public static void union(int x, int y){
+        father[find(x)] = find(y);
+    }
+    public static boolean isSameSet(int x, int y){
+        return find(x)==find(y);
+    }
+
+    public static boolean[] distanceLimitedPathsExist(int n, int[][] edges, int[][] queries) {
+        int m = edges.length;
+        int k = queries.length;
+        boolean[] ans = new boolean[k];
+        init(n);
+
+        for (int i = 0; i < k; i++) {
+            questions[i][0] = queries[i][0];
+            questions[i][1] = queries[i][1];
+            questions[i][2] = queries[i][2];
+            questions[i][3] = i;
+        }
+        Arrays.sort(questions, 0, k, (a, b)->a[2]-b[2]);
+        Arrays.sort(edges, (a, b)->a[2]-b[2]);
+
+        // 当前已经连了的节点数量
+        int nodeCnt = 0;
+        for (int i = 0; i < k; i++) {
+            while(nodeCnt<m && edges[nodeCnt][2]<questions[i][2]){
+                union(edges[nodeCnt][0], edges[nodeCnt][1]);
+                nodeCnt++;
+            }
+            ans[questions[i][3]] = isSameSet(questions[i][0], questions[i][1]);
+        }
+        return ans;
+    }
+}
+```
+]
+
+
+=== #link("https://www.luogu.com.cn/problem/P2330")[题目5: 繁忙的都市 ]
+
+#definition("Definition")[
+- 瓶颈生成树: 无向图 $G$ 的瓶颈生成树是这样的一个生成树，它的最大的边权值在 $G$ 的所有生成树中最小。
+- 性质: 最小生成树是瓶颈生成树的充分不必要条件。 即最小生成树一定是瓶颈生成树，而瓶颈生成树不一定是最小生成树。
+  - 反证法证明：我们设最小生成树中的最大边权为 $w$ ，如果最小生成树不是瓶颈生成树的话，则瓶颈生成树的所有边权都小于 $w$ ，我们只需删去原最小生成树中的最长边，用瓶颈生成树中的一条边来连接删去边后形成的两棵树，得到的新生成树一定比原最小生成树的权值和还要小，这样就产生了矛盾。
+]
+
+城市 C 是一个非常繁忙的大都市，城市中的道路十分的拥挤，于是市长决定对其中的道路进行改造。城市 C 的道路是这样分布的：城市中有 $n$ 个交叉路口，有些交叉路口之间有道路相连，两个交叉路口之间最多有一条道路相连接。这些道路是双向的，且把所有的交叉路口直接或间接的连接起来了。每条道路都有一个分值，分值越小表示这个道路越繁忙，越需要进行改造。但是市政府的资金有限，市长希望进行改造的道路越少越好，于是他提出下面的要求：
+
++ 改造的那些道路能够把所有的交叉路口直接或间接的连通起来。
++ 在满足要求 1 的情况下，改造的道路尽量少。
++ 在满足要求 1、2 的情况下，改造的那些道路中分值最大的道路分值尽量小。
+
+任务：作为市规划局的你，应当作出最佳的决策，选择哪些道路应当被修建。
+
+- 输入格式
+  - 第一行有两个整数 $n,m$ 表示城市有 $n$ 个交叉路口，$m$ 条道路。接下来 $m$ 行是对每条道路的描述，$u, v, c$ 表示交叉路口 $u$ 和 $v$ 之间有道路相连，分值为 $c$。
+- 输出格式
+  - 两个整数 $s, "max"$，表示你选出了几条道路，分值最大的那条道路的分值是多少。
+
+#example("Example")[
+- 样例输入
+
+```
+4 5
+1 2 3
+1 4 5
+2 4 7
+2 3 6
+3 4 8
+```
+
+- 输出
+
+```
+3 6
+```
+]
+
+#tip("Tip")[
+对于全部数据，满足 $1 <= n <= 300$，$1 <= c <= 10^4$，$1 <= m <= 8000$。
+]
+
+==== 解答
+
+#code(caption: [繁忙的都市 - 解答])[
+```java
+public class Code05_BusyCities {
+    public static int MAXN = 301;
+    public static int MAXM = 8001;
+    public static int n,m;
+    public static int[][] edges = new int[MAXM][3];
+
+    public static int[] father = new int[MAXN];
+    public static void init(){
+        for (int i = 1; i <= n; i++) {
+            father[i] = i;
+        }
+    }
+    public static int find(int i){
+        if(i!=father[i]){
+            father[i] = find(father[i]);
+        }
+        return father[i];
+    }
+    public static boolean union(int x, int y){
+        int fx = find(x);
+        int fy = find(y);
+        if(fx!=fy){
+            father[fx] = fy;
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public static boolean isSameSet(int x, int y){
+        return find(x)==find(y);
+    }
+
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StreamTokenizer in = new StreamTokenizer(br);
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+        while(in.nextToken()!=StreamTokenizer.TT_EOF){
+            n = (int)in.nval;
+            in.nextToken();
+            m = (int)in.nval;
+            init();
+            for (int i = 0; i < m; i++) {
+                in.nextToken();
+                edges[i][0] = (int) in.nval;
+                in.nextToken();
+                edges[i][1] = (int) in.nval;
+                in.nextToken();
+                edges[i][2] = (int) in.nval;
+            }
+            Arrays.sort(edges, 0, m, (a, b)->a[2]-b[2]);
+            int ans = 0;
+            int edgeCnt = 0;
+            for (int[] edge : edges) {
+                if(union(edge[0], edge[1])){
+                    edgeCnt++;
+                    ans = Math.max(ans, edge[2]);
+                }
+                if(edgeCnt==n-1){
+                    break;
+                }
+            }
+            out.println((n - 1) + " " + ans);
+        }
+        out.flush();
+        out.close();
+        br.close();
+    }
+}
+```
+]
