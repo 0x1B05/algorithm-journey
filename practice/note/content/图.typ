@@ -331,7 +331,7 @@ public class Code02_TopoSortDynamicNowcoder {
 }
 ```
 ]
-==== #link("https://www.nowcoder.com/practice/88f7e156ca7d43a1a535f619cd3f495c")[newcoder模板(邻接表静态)]
+==== #link("https://www.nowcoder.com/practice/88f7e156ca7d43a1a535f619cd3f495c")[newcoder模板(链式前向星表静态)]
 
 #code(caption: [newcoder拓扑排序模板-静态])[
 ```java
@@ -558,17 +558,6 @@ public class Code02_TopoSortStaticNowcoder {
 
 #code(caption: [Kruskal])[
 ```java
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.util.Arrays;
-
-/**
- * Code01_Kruskal
- */
 public class Code01_Kruskal {
     public static int MAXN = 5001;
     public static int MAXM = 200001;
