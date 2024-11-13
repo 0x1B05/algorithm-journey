@@ -8,7 +8,6 @@
 - 广义的贪心
   - 通过分析题目自身的特点和性质，只要发现让求解答案的过程得到加速的结论，都算广义的贪心
 
-
 == 专题 1
 
 有关贪心的若干现实 & 提醒
@@ -120,14 +119,14 @@ public static void main(String[] args) {
 ```
 ]
 
-其中暴力方法的解析, 见#link("经典递归流程.md")[经典递归流程]
+其中暴力方法的解析, 见#link("经典递归流程.typ")[经典递归流程]
 
 === #link("https://leetcode.cn/problems/largest-number/")[ 题目2: 最大数 ]
 
 给定一组非负整数 nums，重新排列每个数的顺序（每个数不可拆分）使之组成一个最大的整数。
 
 #tip("Tip")[
-输出结果可能非常大，所以你需要返回一个字符串而不是整数。   
+输出结果可能非常大，所以你需要返回一个字符串而不是整数。
 ]
 
 #code(caption: [题目2: 最大数])[
@@ -299,42 +298,41 @@ public static int minDays(int n) {
 #code(caption: [题目1: 砍竹子])[
 ```java
 public class Code01_CuttingBamboo {
+    // 快速幂，求余数
+    // 求x的n次方，最终得到的结果 % mod
+    public static long power(long x, int n, int mod) {
+        long ans = 1;
+        while (n > 0) {
+            if ((n & 1) == 1) {
+                ans = (ans * x) % mod;
+            }
+            x = (x * x) % mod;
+            n >>= 1;
+        }
+        return ans;
+    }
 
-	// 快速幂，求余数
-	// 求x的n次方，最终得到的结果 % mod
-	public static long power(long x, int n, int mod) {
-		long ans = 1;
-		while (n > 0) {
-			if ((n & 1) == 1) {
-				ans = (ans * x) % mod;
-			}
-			x = (x * x) % mod;
-			n >>= 1;
-		}
-		return ans;
-	}
-
-	public static int cuttingBamboo(int n) {
-		if (n == 2) {
-			return 1;
-		}
-		if (n == 3) {
-			return 2;
-		}
-		int mod = 1000000007;
-		// n = 4  -> 2 * 2
-		// n = 5  -> 3 * 2
-		// n = 6  -> 3 * 3
-		// n = 7  -> 3 * 2 * 2
-		// n = 8  -> 3 * 3 * 2
-		// n = 9  -> 3 * 3 * 3
-		// n = 10 -> 3 * 3 * 2 * 2
-		// n = 11 -> 3 * 3 * 3 * 2
-		// n = 12 -> 3 * 3 * 3 * 3
-		int tail = n % 3 == 0 ? 1 : (n % 3 == 1 ? 4 : 2);
-		int power = (tail == 1 ? n : (n - tail)) / 3;
-		return (int) (power(3, power, mod) * tail % mod);
-	}
+    public static int cuttingBamboo(int n) {
+        if (n == 2) {
+            return 1;
+        }
+        if (n == 3) {
+            return 2;
+        }
+        int mod = 1000000007;
+        // n = 4  -> 2 * 2
+        // n = 5  -> 3 * 2
+        // n = 6  -> 3 * 3
+        // n = 7  -> 3 * 2 * 2
+        // n = 8  -> 3 * 3 * 2
+        // n = 9  -> 3 * 3 * 3
+        // n = 10 -> 3 * 3 * 2 * 2
+        // n = 11 -> 3 * 3 * 3 * 2
+        // n = 12 -> 3 * 3 * 3 * 3
+        int tail = n % 3 == 0 ? 1 : (n % 3 == 1 ? 4 : 2);
+        int power = (tail == 1 ? n : (n - tail)) / 3;
+        return (int) (power(3, power, mod) * tail % mod);
+    }
 
 }
 ```
@@ -354,73 +352,72 @@ public class Code01_CuttingBamboo {
 #code(caption: [题目2: 分成k份的最大乘积])[
 ```java
 public class Code02_MaximumProduct {
-        // 快速幂
-  	public static long power(long x, int n, int mod) {
-		long ans = 1;
-		while (n > 0) {
-			if ((n & 1) == 1) {
-				ans = (ans * x) % mod;
-			}
-			x = (x * x) % mod;
-			n >>= 1;
-		}
-		return ans;
-	}
+    // 快速幂
+    public static long power(long x, int n, int mod) {
+        long ans = 1;
+        while (n > 0) {
+            if ((n & 1) == 1) {
+                ans = (ans * x) % mod;
+            }
+            x = (x * x) % mod;
+            n >>= 1;
+        }
+        return ans;
+    }
 
-	// 暴力递归
-	public static int maxValue1(int n, int k) {
-		return f1(n, k);
-	}
+    // 暴力递归
+    public static int maxValue1(int n, int k) {
+        return f1(n, k);
+    }
 
-	// 剩余的数字rest拆成k份
-	// 返回最大乘积
-	// 暴力尝试一定能得到最优解
-	public static int f1(int rest, int k) {
-		if (k == 1) {
-			return rest;
-		}
-		int ans = Integer.MIN_VALUE;
-		for (int cur = 1; cur <= rest && (rest - cur) >= (k - 1); cur++) {
-			int curAns = cur * f1(rest - cur, k - 1);
-			ans = Math.max(ans, curAns);
-		}
-		return ans;
-	}
+    // 剩余的数字rest拆成k份
+    // 返回最大乘积
+    // 暴力尝试一定能得到最优解
+    public static int f1(int rest, int k) {
+        if (k == 1) {
+            return rest;
+        }
+        int ans = Integer.MIN_VALUE;
+        for (int cur = 1; cur <= rest && (rest - cur) >= (k - 1); cur++) {
+            int curAns = cur * f1(rest - cur, k - 1);
+            ans = Math.max(ans, curAns);
+        }
+        return ans;
+    }
 
-	// 贪心
-	// 如果结果很大，那么求余数
-	public static int maxValue2(int n, int k) {
-		int mod = 1000000007;
-		long a = n / k;
-		int b = n % k;
-		long part1 = power(a + 1, b, mod);
-		long part2 = power(a, k - b, mod);
-		return (int) (part1 * part2) % mod;
-	}
+    // 贪心
+    // 如果结果很大，那么求余数
+    public static int maxValue2(int n, int k) {
+        int mod = 1000000007;
+        long a = n / k;
+        int b = n % k;
+        long part1 = power(a + 1, b, mod);
+        long part2 = power(a, k - b, mod);
+        return (int) (part1 * part2) % mod;
+    }
 
-	// 对数器
-	public static void main(String[] args) {
-		int N = 30;
-		int testTimes = 2000;
-		System.out.println("测试开始");
-		for (int i = 1; i <= testTimes; i++) {
-			int n = (int) (Math.random() * N) + 1;
-			int k = (int) (Math.random() * n) + 1;
-			int ans1 = maxValue1(n, k);
-			int ans2 = maxValue2(n, k);
-			if (ans1 != ans2) {
-				// 如果出错了
-				// 可以增加打印行为找到一组出错的例子
-				// 然后去debug
-				System.out.println("出错了！");
-			}
-			if (i % 100 == 0) {
-				System.out.println("测试到第" + i + "组");
-			}
-		}
-		System.out.println("测试结束");
-	}
-
+    // 对数器
+    public static void main(String[] args) {
+        int N = 30;
+        int testTimes = 2000;
+        System.out.println("测试开始");
+        for (int i = 1; i <= testTimes; i++) {
+            int n = (int) (Math.random() * N) + 1;
+            int k = (int) (Math.random() * n) + 1;
+            int ans1 = maxValue1(n, k);
+            int ans2 = maxValue2(n, k);
+            if (ans1 != ans2) {
+                // 如果出错了
+                // 可以增加打印行为找到一组出错的例子
+                // 然后去debug
+                System.out.println("出错了！");
+            }
+            if (i % 100 == 0) {
+                System.out.println("测试到第" + i + "组");
+            }
+        }
+        System.out.println("测试结束");
+    }
 }
 ```
 ]

@@ -445,10 +445,6 @@ public static int numDecodings2(String s) {
 
 这里依然可以使用滚动更新.
 
-=== #link(
-  "https://leetcode.cn/problems/ugly-number-ii/description/",
-)[题目 5: 丑数 II]
-
 #tip(
   "Tip",
 )[
@@ -456,13 +452,17 @@ public static int numDecodings2(String s) {
   题目 5 到题目 8，都是纯粹用动态规划的视角来分析、优化的
 ]
 
+=== #link(
+  "https://leetcode.cn/problems/ugly-number-ii/description/",
+)[题目 5: 丑数 II]
+
+给你一个整数 `n` ，请你找出并返回第 `n` 个 丑数 。
+
 #definition(
   "Definition",
 )[
-*丑数* 就是质因子只包含 `2`、`3` 和 `5` 的正整数。给你一个整数 `n` ，请你找出并返回第 `n` 个
-丑数 。
+*丑数* 就是质因子只包含 `2`、`3` 和 `5` 的正整数。给你一个整数 `n` ，请你找出并返回第 `n` 个丑数 。
 ]
-
 
 #example("Example")[
 - 输入：`n = 10`
@@ -528,15 +528,13 @@ public static int nthUglyNumber(int n) {
   "https://leetcode.cn/problems/longest-valid-parentheses/description/",
 )[题目 6: 最长有效括号]
 
-给你一个只包含 `'('` 和 `')' `的字符串，找出最长有效（格式正确且连续）括号 子串
-的长度。
+给你一个只包含 `'('` 和 `')' `的字符串，找出最长有效（格式正确且连续）括号 子串的长度。
 
 #example("Example")[
 - 输入：`s = "(()"`
 - 输出：`2`
 - 解释：最长有效括号子串是 `"()"`
 ]
-
 
 ==== 解答
 
@@ -587,10 +585,7 @@ public static int longestValidParentheses(String str) {
 - 解释：字符串 `s` 有六个子字符串 `("z", "a", "b", "za", "ab", and "zab")` 在 `base` 中出现。
 ]
 
-
 ==== 解答
-
-
 
 === 总结
 
@@ -654,9 +649,7 @@ public static int longestValidParentheses(String str) {
   "https://leetcode.cn/problems/minimum-path-sum/description/",
 )[ 题目 1 : 最小路径和 ]
 
-给定一个包含非负整数的 m x n 网格 `grid` ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
-
-说明：每次只能向下或者向右移动一步。
+给定一个包含非负整数的 m x n 网格 `grid` ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。每次只能向下或者向右移动一步。
 
 ==== 解答
 
@@ -2225,3 +2218,5 @@ public class Code05_ScrambleString {
 }
 ```
 ]
+
+== 

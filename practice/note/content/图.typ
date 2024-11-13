@@ -1087,7 +1087,7 @@ public class Code04_CheckingExistenceOfEdgeLengthLimit {
 ]
 
 
-=== #link("https://www.luogu.com.cn/problem/P2330")[题目5: 繁忙的都市 ]
+=== #link("https://www.luogu.com.cn/problem/P2330")[题目5: 繁忙的都市]
 
 #definition("Definition")[
 - 瓶颈生成树: 无向图 $G$ 的瓶颈生成树是这样的一个生成树，它的最大的边权值在 $G$ 的所有生成树中最小。
@@ -1205,3 +1205,163 @@ public class Code05_BusyCities {
 }
 ```
 ]
+
+== BFS
+
+- bfs的特点是逐层扩散，从源头点到目标点扩散了几层，最短路就是多少
+- bfs可以使用的特征是 *任意两个节点之间的相互距离相同（无向图）*
+- bfs开始时，可以是 *单个源头*、也可以是 *多个源头*
+- bfs频繁使用队列，形式可以是 *单点弹出* 或者 *整层弹出*
+- bfs进行时，*进入队列的节点需要标记状态*，防止 *同一个节点重复进出队列*
+- bfs进行时，可能会包含 *剪枝策略* 的设计
+
+=== #link("https://leetcode.cn/problems/as-far-from-land-as-possible/")[题目1: 地图分析]
+
+你现在手里有一份大小为 `n x n` 的 网格 `grid`，上面的每个 单元格 都用 `0` 和 `1` 标记好了。其中 `0` 代表海洋，`1` 代表陆地。
+
+请你找出一个海洋单元格，这个海洋单元格到离它最近的陆地单元格的距离是最大的，并返回该距离。如果网格上只有陆地或者海洋，请返回 `-1`。
+
+#definition("Definition")[
+曼哈顿距离（Manhattan Distance）：`(x0, y0)` 和 `(x1, y1)` 这两个单元格之间的距离是 `|x0 - x1| + |y0 - y1|` 。
+]
+
+#example("Example")[
+- 输入：
+  ```
+  grid = [
+    [1,0,1],
+    [0,0,0],
+    [1,0,1]
+  ]
+  ```
+- 输出：`2`
+- 解释： 海洋单元格 `(1, 1)` 和所有陆地单元格之间的距离都达到最大，最大距离为 `2`。
+]
+
+#tip("Tip")[
+- `n == grid.length`
+- `n == grid[i].length`
+- `1 <= n <= 100`
+- `grid[i][j] 不是 0 就是 1`
+]
+
+==== 解答
+
+#code(caption: [地图分析 - 解答])[
+```java
+public class Code01_AsFarFromLandAsPossible {
+    public static int MAXN = 101;
+    public static int MAXM = 101;
+
+    public static int[][] queue = new int[MAXN * MAXM][2];
+    public static int l,r;
+    public static boolean[][] visited = new boolean[MAXN][MAXM];
+
+    // 0:上，1:右，2:下，3:左
+    public static int[] move = new int[] {-1, 0, 1, 0, -1};
+    //                                     0  1  2  3   4
+    //                                              i
+    // (x,y)  i来到0位置 : x + move[i], y + move[i+1] -> x - 1, y
+    // (x,y)  i来到1位置 : x + move[i], y + move[i+1] -> x, y + 1
+    // (x,y)  i来到2位置 : x + move[i], y + move[i+1] -> x + 1, y
+    // (x,y)  i来到3位置 : x + move[i], y + move[i+1] -> x, y - 1
+
+    public static int maxDistance(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        l = r = 0;
+        int seas = 0;
+        // 先把陆地加入队列
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if(grid[i][j]==1){
+                    visited[i][j] = true;
+                    queue[r][0] = i;
+                    queue[r][1] = j;
+                    r++;
+                }else{
+                    visited[i][j] = false;
+                    seas++;
+                }
+            }
+        }
+        if (seas == 0 || seas == n * m) {
+            return -1;
+        }
+
+        int level = 0;
+        while(l < r){
+            level++;
+            int size = r-l;
+            for (int i = 0, x, y, nx, ny; i < size; i++) {
+                x = queue[l][0];
+                y = queue[l++][1];
+                for (int j = 0; j < 4; j++) {
+                    nx = x+move[j];
+                    ny = y+move[j+1];
+                    if(nx >= 0 && nx < n && ny >= 0 && ny < m && !visited[nx][ny]){
+                        visited[nx][ny] = true;
+                        queue[r][0] = nx;
+                        queue[r++][1] = ny;
+                    }
+                }
+            }
+        }
+        return level-1;
+    }
+}
+```
+]
+
+=== #link("https://leetcode.cn/problems/stickers-to-spell-word/")[题目2(剪枝策略): 贴纸拼词]
+
+我们有 `n` 种不同的贴纸。每个贴纸上都有一个小写的英文单词。
+
+您想要拼写出给定的字符串 `target` ，方法是从收集的贴纸中切割单个字母并重新排列它们。如果你愿意，你可以多次使用每个贴纸，每个贴纸的数量是无限的。
+
+返回你需要拼出 `target` 的最小贴纸数量。如果任务不可能，则返回 `-1` 。
+
+#example("Example")[
+- 输入：`stickers = ["with","example","science"]`, `target = "thehat"`
+- 输出：`3`
+- 解释： 我们可以使用 2 个 `"with"` 贴纸，和 1 个 `"example"` 贴纸。把贴纸上的字母剪下来并重新排列后，就可以形成目标 `"thehat"` 了。此外，这是形成目标字符串所需的最小贴纸数量。
+]
+
+#example("Example")[
+- 输入：`stickers = ["notice","possible"]`, `target = "basicbasic"`
+- 输出：`-1`
+- 解释：我们不能通过剪切给定贴纸的字母来形成目标`"basicbasic"`。
+]
+
+#tip("Tip")[
+在所有的测试用例中，所有的单词都是从 1000 个最常见的美国英语单词中随机选择的，并且 target 被选择为两个随机单词的连接。
+]
+
+#tip("Tip")[
+- `n == stickers.length`
+- `1 <= n <= 50`
+- `1 <= stickers[i].length <= 10`
+- `1 <= target.length <= 15`
+- `stickers[i]`和 `target` 由小写英文单词组成
+]
+
+==== 解答
+
+=== 01BFS
+
+适用于 &图中所有边的权重只有0和1两种值，求源点到目标点的最短距离&
+
+时间复杂度为 O(节点数量+边的数量)，为什么不能用传统bfs？
+
+1. `distance[i]`表示从源点到i点的最短距离，初始时所有点的distance设置为无穷大
+2. 源点进入双端队列，`distance[源点]=0`
+3. 双端队列 头部弹出 `x`，
+   1. 如果`x`是目标点，返回`distance[x]`表示源点到目标点的最短距离
+   2. 考察从x出发的每一条边，假设某边去`y`点，边权为`w`
+      1. 如果 `distance[y] > distance[x] + w`，处理该边；否则忽略该边
+      2. 处理时，更新`distance[y] = distance[x] + w`
+         如果`w==0`，`y`从头部进入双端队列；如果`w==1，y`从尾部进入双端队列
+      3. 考察完`x`出发的所有边之后，重复步骤3
+4. 双端队列为空停止
+
+正确性证明 以及 为什么不需要`visited`来标记节点
