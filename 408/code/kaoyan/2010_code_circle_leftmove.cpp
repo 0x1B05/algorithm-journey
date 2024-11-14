@@ -1,6 +1,3 @@
-#include<stdio.h>
-#include<stdlib.h>
-
 void reverse(int a[], int start, int end) {
     //逆置start～end之间的所有数
     int i = 0;

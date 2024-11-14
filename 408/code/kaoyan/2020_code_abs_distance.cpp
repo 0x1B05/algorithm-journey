@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<stdlib.h>
+#include <limits.h>
 
 //获取三个数的绝对值距离
 int getDis(int a, int b, int c) {
@@ -9,6 +9,7 @@ int getDis(int a, int b, int c) {
     if (ab >= bc && ab >= ac)return ab * 2;
     if (bc >= ab && bc >= ac)return bc * 2;
     if (ac >= ab && ac >= bc)return ac * 2;
+    else return 0;
 }
 
 //获取三个数中的最小值
@@ -16,6 +17,7 @@ int getMin(int a, int b, int c) {
     if (a <= b && a <= c)return 0;
     if (b <= c && b <= a)return 1;
     if (c <= a && c <= b)return 2;
+    else return 0;
 }
 
 void getAbsDis(int s1[], int s2[], int s3[], int l1, int l2, int l3) {

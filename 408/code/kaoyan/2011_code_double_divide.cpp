@@ -1,6 +1,3 @@
-#include<stdio.h>
-#include<stdlib.h>
-
 int getMiddle(int a[], int start, int end) {
     return a[(start + end) / 2];
 }

@@ -1,16 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef struct node {
+typedef struct Node {
     int data;
-    struct node* next;
-} NODE;
+    struct Node* next;
+} Node;
 
 //通过数组创建链表
-void create(node* n, int length, int pos, int data[]) {
+void create(Node* n, int length, int pos, int data[]) {
     if (pos < length) {
         n->data = data[pos];//赋给struct中的data
-        node* next = (node*)malloc(sizeof(node));//动态分配下一个节点地址
+        Node* next = (Node*)malloc(sizeof(Node));//动态分配下一个节点地址
         n->next = next;//对下一个节点采用递归构建
         create(n->next, length, pos + 1, data);//递归，pos位置+1
     }
@@ -19,14 +19,14 @@ void create(node* n, int length, int pos, int data[]) {
     }
 }
 
-void cross_sort(node* n, int length) {
+void cross_sort(Node* n, int length) {
     //对后半部分就地逆置
-    node* mid = n;
-    node* start = n;
+    Node* mid = n;
+    Node* start = n;
     int i;
     for (i = 0;i < length / 2;i++)mid = mid->next;//找到中间节点
     //从中间开始逆置链表
-    node* s, * t;
+    Node* s, * t;
     s = mid->next;
     mid->next = NULL;
     while (s->data != -1) {
@@ -37,12 +37,12 @@ void cross_sort(node* n, int length) {
         t->next = mid->next;
         mid->next = t;
     }
-    node* tmp = mid;
+    Node* tmp = mid;
     mid = mid->next;//后移
     tmp->next = NULL;
     i++;
     while (i++ < length && mid != NULL) {
-        node* p, * q;
+        Node* p, * q;
         //使用p、q暂存start和mid节点
         p = start->next;
         q = mid->next;
@@ -59,7 +59,7 @@ void cross_sort(node* n, int length) {
 }
 
 int main() {
-    node* a = (node*)malloc(sizeof(node));
+    Node* a = (Node*)malloc(sizeof(Node));
     int d[] = { 1,2,3,4,5,6,7,8 };
     create(a, 8, 0, d);
     cross_sort(a, 8);

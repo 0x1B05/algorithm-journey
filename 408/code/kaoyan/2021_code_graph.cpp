@@ -1,11 +1,13 @@
 #include <stdio.h>
-#include <stdlib.h>
+
 #define MAXV 5
+
 typedef struct {
     int numVertices, numEdges;
     char VerticesList[MAXV];
     int Edge[MAXV][MAXV];
-}MGraph;
+} MGraph;
+
 int IsExistEL(MGraph G) {
     int oddCount = 0;
     for (int i = 0;i < G.numVertices;i++) {
@@ -28,6 +30,7 @@ void setG(MGraph* g, int a[]) {
         g->Edge[i / 5][i % 5] = a[i];
     }
 }
+
 int main() {
     MGraph G;
     G.numVertices = 5;

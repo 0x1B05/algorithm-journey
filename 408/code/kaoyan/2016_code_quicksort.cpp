@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <cstring>
 
 void printArr(int a[], int n) {
 	for (int i = 0; i < n; i++) {
@@ -9,8 +7,7 @@ void printArr(int a[], int n) {
 }
 
 int Partition(int A[], int low, int high) {
-	//快速排序
-	int pivot = A[low]; //选取第一个作为枢轴
+	int pivot = A[low];
 	while (low < high) {
 		while (low < high && A[high] >= pivot)
 			high--;

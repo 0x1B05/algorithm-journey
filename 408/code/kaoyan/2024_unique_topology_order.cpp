@@ -1,4 +1,3 @@
-#include <iostream>
 #include <queue>
 #include <vector>
 
@@ -37,7 +36,6 @@ int intquely(MGraph G) {
         if (q.size() > 1) { // 入度为0的顶点不唯一
             return 0;
         }
-        
         int v = q.front();
         q.pop();
         topoOrder.push_back(v);

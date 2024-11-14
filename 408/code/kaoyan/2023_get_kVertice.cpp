@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #define MAXV 4
 
 typedef struct {                // 图的定义
