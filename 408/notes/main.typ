@@ -34,3 +34,4 @@
 
 #include "content/真题.typ"
 #include "content/模板.typ"
+#include "content/刷题清单.typ"

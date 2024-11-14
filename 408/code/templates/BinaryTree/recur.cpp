@@ -4,20 +4,15 @@
 
 using namespace std;
 
-/**
- * 二叉树节点结构
- */
-struct Node {
+class Node {
+public:
     int value;
     Node* left;
     Node* right;
-
     Node(int val) : value(val), left(nullptr), right(nullptr) {}
 };
 
-/**
- * 递归先序遍历
- */
+// Pre-order recursion (Root -> Left -> Right)
 void preOrderRecur(Node* head) {
     if (head == nullptr) {
         return;
@@ -27,9 +22,7 @@ void preOrderRecur(Node* head) {
     preOrderRecur(head->right);
 }
 
-/**
- * 递归中序遍历
- */
+// In-order recursion (Left -> Root -> Right)
 void inOrderRecur(Node* head) {
     if (head == nullptr) {
         return;
@@ -39,9 +32,7 @@ void inOrderRecur(Node* head) {
     inOrderRecur(head->right);
 }
 
-/**
- * 递归后序遍历
- */
+// Post-order recursion (Left -> Right -> Root)
 void posOrderRecur(Node* head) {
     if (head == nullptr) {
         return;
@@ -51,9 +42,7 @@ void posOrderRecur(Node* head) {
     cout << head->value << " ";
 }
 
-/**
- * 非递归先序遍历
- */
+// Pre-order non-recursion (Root -> Left -> Right)
 void preOrderUnRecur(Node* head) {
     cout << "pre-order: ";
     if (head != nullptr) {
@@ -63,7 +52,6 @@ void preOrderUnRecur(Node* head) {
             head = s.top();
             s.pop();
             cout << head->value << " ";
-            // 先右再左入栈，保证左子树先遍历
             if (head->right != nullptr) {
                 s.push(head->right);
             }
@@ -75,43 +63,36 @@ void preOrderUnRecur(Node* head) {
     cout << endl;
 }
 
-/**
- * 非递归中序遍历
- */
+// In-order non-recursion (Left -> Root -> Right)
 void inOrderUnRecur(Node* head) {
     cout << "in-order: ";
-    stack<Node*> s;
-    while (!s.empty() || head != nullptr) {
-        // 遍历左子树，入栈
-        if (head != nullptr) {
-            s.push(head);
-            head = head->left;
-        } else {
-            // 弹出栈顶元素，访问节点
-            head = s.top();
-            s.pop();
-            cout << head->value << " ";
-            // 处理右子树
-            head = head->right;
+    if (head != nullptr) {
+        stack<Node*> s;
+        while (!s.empty() || head != nullptr) {
+            if (head != nullptr) {
+                s.push(head);
+                head = head->left;
+            } else {
+                head = s.top();
+                s.pop();
+                cout << head->value << " ";
+                head = head->right;
+            }
         }
     }
     cout << endl;
 }
 
-/**
- * 非递归后序遍历
- */
+// Post-order non-recursion (Left -> Right -> Root)
 void posOrderUnRecur(Node* head) {
     cout << "pos-order: ";
     if (head != nullptr) {
-        stack<Node*> s1; // 辅助栈
-        stack<Node*> s2; // 收集栈
+        stack<Node*> s1, s2;
         s1.push(head);
         while (!s1.empty()) {
             head = s1.top();
             s1.pop();
             s2.push(head);
-            // 先左后右入栈
             if (head->left != nullptr) {
                 s1.push(head->left);
             }
@@ -119,7 +100,6 @@ void posOrderUnRecur(Node* head) {
                 s1.push(head->right);
             }
         }
-        // 从收集栈弹出并访问
         while (!s2.empty()) {
             cout << s2.top()->value << " ";
             s2.pop();
@@ -128,9 +108,7 @@ void posOrderUnRecur(Node* head) {
     cout << endl;
 }
 
-/**
- * 宽度优先遍历（BFS）
- */
+// Breadth-First Search (Level-order traversal)
 void bfs(Node* head) {
     if (head == nullptr) {
         return;
@@ -141,11 +119,9 @@ void bfs(Node* head) {
         Node* cur = q.front();
         q.pop();
         cout << cur->value << " ";
-        // 左子树入队
         if (cur->left != nullptr) {
             q.push(cur->left);
         }
-        // 右子树入队
         if (cur->right != nullptr) {
             q.push(cur->right);
         }
@@ -153,11 +129,14 @@ void bfs(Node* head) {
     cout << endl;
 }
 
-/**
- * 测试代码
- */
+// Main function for testing
 int main() {
-    // 构建二叉树
+    // Example tree:
+    //         1
+    //        / \
+    //       2   3
+    //      / \   / \
+    //     4   5 6   7
     Node* root = new Node(1);
     root->left = new Node(2);
     root->right = new Node(3);
@@ -166,36 +145,24 @@ int main() {
     root->right->left = new Node(6);
     root->right->right = new Node(7);
 
-    // 递归遍历
-    cout << "Recursive PreOrder: ";
+    // Testing all traversal methods
+    cout << "Pre-order Recursive: ";
     preOrderRecur(root);
     cout << endl;
 
-    cout << "Recursive InOrder: ";
+    cout << "In-order Recursive: ";
     inOrderRecur(root);
     cout << endl;
 
-    cout << "Recursive PostOrder: ";
+    cout << "Post-order Recursive: ";
     posOrderRecur(root);
     cout << endl;
 
-    // 非递归遍历
     preOrderUnRecur(root);
     inOrderUnRecur(root);
     posOrderUnRecur(root);
 
-    // 宽度优先遍历
-    cout << "BFS: ";
+    cout << "Breadth-First Search: ";
     bfs(root);
-
-    // 释放内存
-    delete root->left->left;
-    delete root->left->right;
-    delete root->right->left;
-    delete root->right->right;
-    delete root->left;
-    delete root->right;
-    delete root;
-
     return 0;
 }

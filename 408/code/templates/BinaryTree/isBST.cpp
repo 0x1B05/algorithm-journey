@@ -1,112 +1,138 @@
 #include <iostream>
 #include <stack>
-#include <climits> // 用于 INT_MIN
+#include <climits>
 
 using namespace std;
 
-/**
- * 二叉树节点结构
- */
+// Definition for a binary tree node.
 struct Node {
     int value;
     Node* left;
     Node* right;
 
-    Node(int val) : value(val), left(nullptr), right(nullptr) {}
+    Node(int x) : value(x), left(nullptr), right(nullptr) {}
 };
 
-// 全局变量 minValue, 用于记录中序遍历的前一个节点值
+// Helper structure for ReturnType in method 3
+struct ReturnType {
+    int max;
+    int min;
+    bool isBST;
+
+    ReturnType(int m, int n, bool bst) : max(m), min(n), isBST(bst) {}
+};
+
+// Global variable for method 1 and 2 to track the minimum value during traversal
 int minValue = INT_MIN;
 
-/**
- * 使用递归的中序遍历判断是否为二叉搜索树
- */
+// Method 1: Recursively check if the tree is a BST using in-order traversal
 bool isBST1(Node* root) {
     if (root == nullptr) {
         return true;
     }
-
-    // 检查左子树是否为二叉搜索树
-    if (!isBST1(root->left)) {
+    
+    // Check the left subtree
+    bool isLeftBst = isBST1(root->left);
+    if (!isLeftBst) {
         return false;
     }
 
-    // 检查当前节点是否大于中序遍历的前一个节点值
+    // If the current node is not greater than the minimum value, return false
     if (root->value <= minValue) {
         return false;
     } else {
-        // 更新 minValue 为当前节点值
+        // Update minValue
         minValue = root->value;
     }
 
-    // 检查右子树是否为二叉搜索树
+    // Check the right subtree
     return isBST1(root->right);
 }
 
-/**
- * 使用迭代的中序遍历判断是否为二叉搜索树
- */
+// Method 2: Iterative in-order traversal to check if the tree is a BST
 bool isBST2(Node* root) {
     stack<Node*> stack;
     Node* temp = root;
-    int minValue = INT_MIN; // 迭代方法中使用局部变量 minValue
 
     while (temp != nullptr || !stack.empty()) {
-        // 将左子树节点依次入栈
         while (temp != nullptr) {
             stack.push(temp);
             temp = temp->left;
         }
-
-        // 获取栈顶节点
         temp = stack.top();
         stack.pop();
 
-        // 判断是否符合升序（BST 性质）
+        // If the current node is not greater than the minimum value, return false
         if (temp->value <= minValue) {
             return false;
         } else {
-            // 更新 minValue
+            // Update minValue
             minValue = temp->value;
         }
-
-        // 遍历右子树
         temp = temp->right;
     }
 
     return true;
 }
 
-/**
- * 测试代码
- */
+// Method 3: Check if the tree is a BST using post-order traversal
+ReturnType process(Node* root) {
+    if (root == nullptr) {
+        return ReturnType(INT_MIN, INT_MAX, true);
+    }
+
+    ReturnType left = process(root->left);
+    ReturnType right = process(root->right);
+
+    int min = root->value;
+    int max = root->value;
+
+    if (left.isBST) {
+        min = std::min(min, left.min);
+        max = std::max(max, left.max);
+    }
+
+    if (right.isBST) {
+        min = std::min(min, right.min);
+        max = std::max(max, right.max);
+    }
+
+    bool isBST = (left.isBST && left.max < root->value) && 
+                 (right.isBST && right.min > root->value);
+
+    return ReturnType(max, min, isBST);
+}
+
+bool isBST3(Node* root) {
+    return process(root).isBST;
+}
+
 int main() {
-    // 构建二叉树
-    Node* root = new Node(5);
-    root->left = new Node(3);
-    root->right = new Node(7);
-    root->left->left = new Node(2);
-    root->left->right = new Node(4);
-    root->right->left = new Node(6);
-    root->right->right = new Node(8);
+    // Example binary tree:
+    //         4
+    //        / \
+    //       2   6
+    //      / \   / \
+    //     1   3 5   7
+    Node* root = new Node(4);
+    root->left = new Node(2);
+    root->right = new Node(6);
+    root->left->left = new Node(1);
+    root->left->right = new Node(3);
+    root->right->left = new Node(5);
+    root->right->right = new Node(7);
 
-    // 使用递归方法判断
-    minValue = INT_MIN; // 重置 minValue
-    bool result1 = isBST1(root);
-    cout << "Is the tree a BST (Recursive)? " << (result1 ? "Yes" : "No") << endl;
+    // Test isBST1
+    cout << "isBST1: " << (isBST1(root) ? "True" : "False") << endl;
 
-    // 使用迭代方法判断
-    bool result2 = isBST2(root);
-    cout << "Is the tree a BST (Iterative)? " << (result2 ? "Yes" : "No") << endl;
+    // Reset minValue for method 2
+    minValue = INT_MIN;
 
-    // 释放内存
-    delete root->left->left;
-    delete root->left->right;
-    delete root->right->left;
-    delete root->right->right;
-    delete root->left;
-    delete root->right;
-    delete root;
+    // Test isBST2
+    cout << "isBST2: " << (isBST2(root) ? "True" : "False") << endl;
+
+    // Test isBST3
+    cout << "isBST3: " << (isBST3(root) ? "True" : "False") << endl;
 
     return 0;
 }

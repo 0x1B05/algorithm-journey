@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+
 using namespace std;
 
 // Get the next array

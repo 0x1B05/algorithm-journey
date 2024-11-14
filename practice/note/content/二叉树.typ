@@ -344,10 +344,10 @@ public static boolean isBST2(Node root) {
         }
         temp = stack.pop();
         // 如果不符合升序返回false
-        if (root.value <= minValue) {
+        if (temp.value <= minValue) {
             return false;
         } else {// 更新minValue
-            minValue = root.value;
+            minValue = temp.value;
         }
         temp = temp.right;
     }
