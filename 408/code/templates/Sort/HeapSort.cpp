@@ -1,4 +1,6 @@
 #include <vector>
+#include <iostream>
+
 using namespace std;
 
 // 交换函数，用于交换数组中的两个元素
@@ -72,4 +74,29 @@ void heapSort(vector<int> &nums) {
         swap(nums, 0, --heapSize); // 将堆顶（最大值）放到数组末尾
         heapify(nums, 0, heapSize); // 调整剩余部分为大根堆
     }
+}
+
+// 主函数
+int main() {
+    // 测试用例
+    vector<int> arr = {3, 6, 8, 10, 1, 2, 1};
+
+    // 输出排序前的数组
+    cout << "排序前: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    // 调用快速排序函数
+    heapSort(arr);
+
+    // 输出排序后的数组
+    cout << "排序后: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
 }

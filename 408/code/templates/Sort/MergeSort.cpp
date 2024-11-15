@@ -1,4 +1,6 @@
 #include <vector>
+#include <iostream>
+
 using namespace std;
 
 // 合并函数，用于将两个有序部分合并为一个有序数组
@@ -57,4 +59,27 @@ void mergeSort(vector<int> &arr) {
     process(arr, 0, len - 1);
 }
 
+// 主函数
+int main() {
+    // 测试用例
+    vector<int> arr = {3, 6, 8, 10, 1, 2, 1};
 
+    // 输出排序前的数组
+    cout << "排序前: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    // 调用快速排序函数
+    mergeSort(arr);
+
+    // 输出排序后的数组
+    cout << "排序后: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}

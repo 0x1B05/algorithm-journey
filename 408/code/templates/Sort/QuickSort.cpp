@@ -1,5 +1,6 @@
+#include <iostream>
 #include <vector>
-#include <cstdlib> // 用于随机数生成
+
 using namespace std;
 
 // 交换函数，用于交换数组中的两个元素
@@ -50,4 +51,29 @@ void process(vector<int> &arr, int l, int r) {
 void quickSort(vector<int> &arr) {
     // 调用递归处理函数，对整个数组进行排序
     process(arr, 0, arr.size() - 1);
+}
+
+// 主函数
+int main() {
+    // 测试用例
+    vector<int> arr = {3, 6, 8, 10, 1, 2, 1};
+
+    // 输出排序前的数组
+    cout << "排序前: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    // 调用快速排序函数
+    quickSort(arr);
+
+    // 输出排序后的数组
+    cout << "排序后: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
 }

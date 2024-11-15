@@ -1,4 +1,6 @@
+#include <iostream>
 #include <vector>
+
 using namespace std;
 
 // 交换函数，用于交换数组中的两个元素
@@ -61,4 +63,29 @@ void insertSort(vector<int> &arr) {
             swap(arr, j, j - 1); // 如果前一个元素大于当前元素，交换位置
         }
     }
+}
+
+// 主函数
+int main() {
+    // 测试用例
+    vector<int> arr = {3, 6, 8, 10, 1, 2, 1};
+
+    // 输出排序前的数组
+    cout << "排序前: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    // 调用快速排序函数
+    insertSort(arr);
+
+    // 输出排序后的数组
+    cout << "排序后: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
 }

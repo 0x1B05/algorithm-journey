@@ -4,7 +4,7 @@
 = 真题
 
 #pagebreak()
-#code(caption: [2009])[
+#figure(caption: [2009])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -45,7 +45,7 @@ int main() {
 ]
 
 #pagebreak()
-#code(caption: [2010])[
+#figure(caption: [2010])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -76,7 +76,7 @@ int main() {
 ]
 
 #pagebreak()
-#code(caption: [2011])[
+#figure(caption: [2011])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -145,7 +145,7 @@ int main() {
 ]
 
 #pagebreak()
-#code(caption: [2012])[
+#figure(caption: [2012])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -214,7 +214,7 @@ int main() {
 ]
 
 #pagebreak()
-#code(caption: [2013])[
+#figure(caption: [2013])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -247,7 +247,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2014])[
+#figure(caption: [2014])[
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -292,7 +292,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2015])[
+#figure(caption: [2015])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -341,7 +341,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2016])[
+#figure(caption: [2016])[
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -387,7 +387,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2017])[
+#figure(caption: [2017])[
 ```c
 #include<stdio.h>
 #include <stdlib.h>
@@ -434,7 +434,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2018])[
+#figure(caption: [2018])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -463,7 +463,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2019])[
+#figure(caption: [2019])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -535,7 +535,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2020])[
+#figure(caption: [2020])[
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -583,7 +583,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2021])[
+#figure(caption: [2021])[
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -633,7 +633,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2022])[
+#figure(caption: [2022])[
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -673,7 +673,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2023])[
+#figure(caption: [2023])[
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -729,7 +729,7 @@ int main() {
 ```
 ]
 #pagebreak()
-#code(caption: [2024])[
+#figure(caption: [2024])[
 ```c
 #include <iostream>
 #include <queue>
