@@ -2,7 +2,6 @@
 #include <queue>
 #include <stack>
 #include <vector>
-#include <climits>
 
 #define MAXV 100   // 假设最大顶点数为 100
 
@@ -21,7 +20,7 @@ void initializeGraph(MGraph& graph, int numVertices) {
     graph.numEdges = 0;
     for (int i = 0; i < numVertices; ++i) {
         for (int j = 0; j < numVertices; ++j) {
-            graph.Edge[i][j] = (i == j) ? 0 : INT_MAX; // 初始化为无穷大
+            graph.Edge[i][j] = 0; // 初始化为无穷大
         }
     }
 }
@@ -43,7 +42,7 @@ void bfs(const MGraph& graph, int start) {
 
         // 遍历所有相邻顶点
         for (int i = 0; i < graph.numVertices; ++i) {
-            if (graph.Edge[cur][i] != INT_MAX && !visited[i]) {
+            if (graph.Edge[cur][i] != 0 && !visited[i]) {
                 q.push(i);             // 将未访问的相邻顶点加入队列
                 visited[i] = true;     // 标记为已访问
             }
@@ -68,7 +67,7 @@ void dfs(const MGraph& graph, int start) {
 
         // 寻找未访问的邻接点
         for (int i = 0; i < graph.numVertices; ++i) {
-            if (graph.Edge[cur][i] != INT_MAX && !visited[i]) {
+            if (graph.Edge[cur][i] != 0 && !visited[i]) {
                 s.push(cur);              // 重新压回当前节点
                 s.push(i);                // 压入未访问的邻接节点
                 visited[i] = true;        // 标记为已访问

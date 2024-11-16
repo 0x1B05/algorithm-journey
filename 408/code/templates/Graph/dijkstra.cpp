@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <climits>
 
 #define MAXV 100   // 假设最大顶点数为 100
@@ -24,39 +25,38 @@ void initializeGraph(MGraph& graph, int numVertices) {
     }
 }
 
-// Dijkstra算法求最短路径
+
 vector<int> dijkstra(const MGraph& graph, int start) {
-    vector<int> dist(graph.numVertices, INT_MAX); // 距离数组，初始为无穷大
-    vector<bool> visited(graph.numVertices, false); // 访问标记数组
+    vector<int> dist(graph.numVertices, INT_MAX); // 初始化所有顶点的距离为无穷大
+    vector<bool> visited(graph.numVertices, false); // 初始化所有顶点为未访问
     dist[start] = 0; // 起点到自己的距离为 0
 
-    for (int i = 0; i < graph.numVertices; ++i) {
-        // 寻找未访问的距离最小的顶点
-        int minDist = INT_MAX;
-        int minIndex = -1;
-        for (int j = 0; j < graph.numVertices; ++j) {
-            if (!visited[j] && dist[j] < minDist) {
-                minDist = dist[j];
-                minIndex = j;
-            }
-        }
+    // 使用优先队列来实现 Dijkstra 算法
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push({0, start}); // 将起点加入队列，初始距离为 0
 
-        if (minIndex == -1) break; // 无法找到更小的距离，结束算法
+    while (!pq.empty()) {
+        int u = pq.top().second; // 取出当前距离最小的节点
+        pq.pop();
 
-        visited[minIndex] = true; // 标记为已访问
+        // 如果该节点已经被访问过，跳过
+        if (visited[u]) continue;
 
-        // 更新相邻顶点的距离
-        for (int j = 0; j < graph.numVertices; ++j) {
-            if (graph.Edge[minIndex][j] != INT_MAX && !visited[j]) {
-                int newDist = dist[minIndex] + graph.Edge[minIndex][j];
-                if (newDist < dist[j]) {
-                    dist[j] = newDist;
+        visited[u] = true; // 标记该节点为已访问
+
+        // 更新所有邻接节点的最短路径
+        for (int v = 0; v < graph.numVertices; ++v) {
+            if (graph.Edge[u][v] != INT_MAX && !visited[v]) {
+                int newDist = dist[u] + graph.Edge[u][v];
+                if (newDist < dist[v]) {
+                    dist[v] = newDist;
+                    pq.push({dist[v], v}); // 更新队列中的距离
                 }
             }
         }
     }
 
-    return dist;
+    return dist; // 返回最短路径数组
 }
 
 // 打印最短路径结果
