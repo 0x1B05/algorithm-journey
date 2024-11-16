@@ -5,7 +5,7 @@
 
 == 链表
 
-- 反转链表(leetcode.cn/problems/reverse-linked-list/description)
+- 反转链表(leetcode.cn/problems/reverse-linked-list/description) over
 - 反转链表 II(leetcode.cn/problems/reverse-linked-list-ii/description)
 - 删除排序链表中的重复元素(leetcode.cn/problems/remove-duplicates-from-sorted-list/description)
 - K 个一组翻转链表(leetcode.cn/problems/reverse-nodes-in-k-group/description)

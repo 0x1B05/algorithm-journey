@@ -4,62 +4,56 @@
 
 using namespace std;
 
-class ListNode {
-public:
+struct ListNode {
     int val;
     ListNode *next;
     ListNode(int x) : val(x), next(nullptr) {}
 };
 
-class Code01_MergeKSortedLists {
-public:
-    ListNode* mergeKLists(vector<ListNode*>& lists) {
-        // Priority queue (min-heap) to store the nodes based on their values
-        auto comp = [](ListNode* a, ListNode* b) { return a->val > b->val; };
-        priority_queue<ListNode*, vector<ListNode*>, decltype(comp)> heap(comp);
+ListNode* mergeKLists(vector<ListNode*>& lists) {
+    // Priority queue (min-heap) to store the nodes based on their values
+    auto comp = [](ListNode* a, ListNode* b) { return a->val > b->val; };
+    priority_queue<ListNode*, vector<ListNode*>, decltype(comp)> heap(comp);
 
-        // Add the head of each non-null list into the heap
-        for (ListNode* listNode : lists) {
-            if (listNode != nullptr) {
-                heap.push(listNode);
-            }
+    // Add the head of each non-null list into the heap
+    for (ListNode* listNode : lists) {
+        if (listNode != nullptr) {
+            heap.push(listNode);
         }
-
-        // If the heap is empty, return null (no lists to merge)
-        if (heap.empty()) {
-            return nullptr;
-        }
-
-        // Initialize the merged list's head and tail
-        ListNode* head = heap.top();
-        heap.pop();
-        ListNode* tail = head;
-
-        // If the first node has a next node, add it to the heap
-        if (tail->next != nullptr) {
-            heap.push(tail->next);
-        }
-
-        // Process the rest of the nodes in the heap
-        while (!heap.empty()) {
-            ListNode* cur = heap.top();
-            heap.pop();
-            tail->next = cur;  // Append the current node to the merged list
-            tail = cur;        // Move the tail pointer to the current node
-            if (cur->next != nullptr) {
-                heap.push(cur->next);  // If the current node has a next, add it to the heap
-            }
-        }
-
-        // Return the merged list
-        return head;
     }
-};
+
+    // If the heap is empty, return null (no lists to merge)
+    if (heap.empty()) {
+        return nullptr;
+    }
+
+    // Initialize the merged list's head and tail
+    ListNode* head = heap.top();
+    heap.pop();
+    ListNode* tail = head;
+
+    // If the first node has a next node, add it to the heap
+    if (tail->next != nullptr) {
+        heap.push(tail->next);
+    }
+
+    // Process the rest of the nodes in the heap
+    while (!heap.empty()) {
+        ListNode* cur = heap.top();
+        heap.pop();
+        tail->next = cur;  // Append the current node to the merged list
+        tail = cur;        // Move the tail pointer to the current node
+        if (cur->next != nullptr) {
+            heap.push(cur->next);  // If the current node has a next, add it to the heap
+        }
+    }
+
+    // Return the merged list
+    return head;
+}
 
 int main() {
     // Example usage
-    Code01_MergeKSortedLists solution;
-
     // Creating example linked lists
     ListNode* list1 = new ListNode(1);
     list1->next = new ListNode(4);
@@ -75,7 +69,7 @@ int main() {
     vector<ListNode*> lists = {list1, list2, list3};
 
     // Merging the k sorted lists
-    ListNode* mergedList = solution.mergeKLists(lists);
+    ListNode* mergedList = mergeKLists(lists);
 
     // Printing the merged list
     ListNode* current = mergedList;

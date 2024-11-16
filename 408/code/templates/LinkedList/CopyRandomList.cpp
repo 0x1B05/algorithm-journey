@@ -1,6 +1,8 @@
 #include <iostream>
 #include <unordered_map>
 
+using namespace std;
+
 struct Node {
     int value;
     Node* next;
@@ -13,7 +15,7 @@ struct Node {
 Node* copyRandomList1(Node* head) {
     if (head == nullptr) return nullptr;
 
-    std::unordered_map<Node*, Node*> map;
+    unordered_map<Node*, Node*> map;
 
     // First pass: Create a copy of each node and store it in the map
     Node* temp = head;
@@ -84,30 +86,30 @@ int main() {
     Node* copiedList2 = copyRandomList2(head);
 
     // Output copied list from method 1
-    std::cout << "Copied List 1 (Method 1):" << std::endl;
+    cout << "Copied List 1 (Method 1):" << endl;
     Node* temp = copiedList1;
     while (temp != nullptr) {
-        std::cout << "Value: " << temp->value;
+        cout << "Value: " << temp->value;
         if (temp->random != nullptr) {
-            std::cout << ", Random Value: " << temp->random->value;
+            cout << ", Random Value: " << temp->random->value;
         } else {
-            std::cout << ", Random Value: nullptr";
+            cout << ", Random Value: nullptr";
         }
-        std::cout << std::endl;
+        cout << endl;
         temp = temp->next;
     }
 
     // Output copied list from method 2
-    std::cout << "Copied List 2 (Method 2):" << std::endl;
+    cout << "Copied List 2 (Method 2):" << endl;
     temp = copiedList2;
     while (temp != nullptr) {
-        std::cout << "Value: " << temp->value;
+        cout << "Value: " << temp->value;
         if (temp->random != nullptr) {
-            std::cout << ", Random Value: " << temp->random->value;
+            cout << ", Random Value: " << temp->random->value;
         } else {
-            std::cout << ", Random Value: nullptr";
+            cout << ", Random Value: nullptr";
         }
-        std::cout << std::endl;
+        cout << endl;
         temp = temp->next;
     }
 

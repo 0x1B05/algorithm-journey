@@ -12,17 +12,17 @@ Node* reverseLinkedList(Node* head) {
     if (head == nullptr) {
         return head;  // Return if the list is empty
     }
-    Node* current = head;
+    Node* cur = head;
     Node* pre = nullptr;
-    Node* next = current->next;
-    while (current != nullptr) {
+    Node* next = cur->next;
+    while (cur != nullptr) {
         // Save the next node to avoid losing reference to the rest of the list
-        next = current->next;
-        // Reverse the current node's pointer
-        current->next = pre;
+        next = cur->next;
+        // Reverse the cur node's pointer
+        cur->next = pre;
         // Move the pointers forward
-        pre = current;
-        current = next;
+        pre = cur;
+        cur = next;
     }
 
     // When the loop ends, pre points to the new head of the reversed list
@@ -44,10 +44,10 @@ Node* reverseList(Node* head) {
 }
 
 void printList(Node* head) {
-    Node* current = head;
-    while (current != nullptr) {
-        cout << current->value << " -> ";
-        current = current->next;
+    Node* cur = head;
+    while (cur != nullptr) {
+        cout << cur->value << " -> ";
+        cur = cur->next;
     }
     cout << "nullptr" << endl;
 }

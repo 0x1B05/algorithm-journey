@@ -3,7 +3,6 @@
 
 = 真题
 
-#pagebreak()
 #figure(caption: [2009])[
 ```c
 #include<stdio.h>

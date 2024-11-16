@@ -10,62 +10,106 @@
 #figure(
 ```cpp
 #include <vector>
+#include <iostream>
+
 using namespace std;
 
-// 合并函数，用于将两个有序部分合并为一个有序数组
-void merge(vector<int> &arr, int L, int M, int R) {
-    // 创建一个临时数组用于存放合并后的结果
-    vector<int> container(R - L + 1);
-    int i = 0;
-    int p1 = L, p2 = M + 1; // p1指向左半部分的起始，p2指向右半部分的起始
-
-    // 当左右两部分都有剩余元素时，进行比较并放入容器
-    while (p1 <= M && p2 <= R) {
-        // 将较小的元素放入容器，并移动指针
-        container[i++] = (arr[p1] <= arr[p2]) ? arr[p1++] : arr[p2++];
-    }
-
-    // 如果左半部分还有剩余元素，直接加入容器
-    while (p1 <= M) {
-        container[i++] = arr[p1++];
-    }
-
-    // 如果右半部分还有剩余元素，直接加入容器
-    while (p2 <= R) {
-        container[i++] = arr[p2++];
-    }
-
-    // 将容器中的元素复制回原数组相应位置
-    for (i = 0; i < container.size(); i++) {
-        arr[L + i] = container[i];
-    }
-}
-
-// 递归处理函数，用于将数组分割并排序
-void process(vector<int> &arr, int L, int R) {
-    // 当左右边界相等时，不需要继续分割
-    if (L == R) {
+// 交换函数，用于交换数组中的两个元素
+void swap(vector<int> &nums, int i, int j) {
+    // 如果两个位置的元素相等，直接返回
+    if (nums[i] == nums[j]) {
         return;
     }
-    // 计算中间位置，避免直接加法导致的溢出
-    int mid = L + ((R - L) >> 1);
-    // 对左半部分进行递归排序
-    process(arr, L, mid);
-    // 对右半部分进行递归排序
-    process(arr, mid + 1, R);
-    // 合并已经排好序的左右两部分
-    merge(arr, L, mid, R);
+    // 使用异或运算交换元素的值
+    nums[i] = nums[i] ^ nums[j];
+    nums[j] = nums[i] ^ nums[j];
+    nums[i] = nums[i] ^ nums[j];
 }
 
-// 归并排序
-void mergeSort(vector<int> &arr) {
-    int len = arr.size();
+// 堆化函数，用于将 `index` 位置的元素下沉，保持子树为大根堆
+void heapify(vector<int> &nums, int index, int heapSize) {
+    int parent = index;
+    int left = 2 * parent + 1;  // 左孩子下标
+    int right = 2 * parent + 2; // 右孩子下标
+
+    // 当左孩子在堆范围内时，继续调整
+    while (left < heapSize) {
+        // 找到左、右孩子中较大的那个
+        int largerChild = (right < heapSize && nums[right] > nums[left]) ? right : left;
+        // 在父节点和较大孩子中找出更大的那个
+        int max = (nums[largerChild] > nums[parent]) ? largerChild : parent;
+
+        // 如果最大值是父节点，则结束调整
+        if (max == parent) {
+            break;
+        }
+
+        // 否则交换父节点和较大孩子的位置
+        swap(nums, parent, max);
+        parent = max;
+        left = 2 * parent + 1;
+        right = 2 * parent + 2;
+    }
+}
+
+// 堆插入函数，用于在堆的末尾插入一个元素并向上调整
+void heapInsert(vector<int> &nums, int index) {
+    int parent = (index - 1) / 2;
+
+    // 当插入的元素比父节点大时，交换两者并继续向上调整
+    while (index > 0 && nums[index] > nums[parent]) {
+        swap(nums, index, parent);
+        index = parent;
+        parent = (index - 1) / 2;
+    }
+}
+
+// 堆排序主函数
+void heapSort(vector<int> &nums) {
+    int len = nums.size();
+
     // 如果数组为空或者长度小于2，直接返回
-    if (arr.empty() || len < 2) {
+    if (nums.empty() || len < 2) {
         return;
     }
-    // 调用递归排序处理函数，初始范围为整个数组
-    process(arr, 0, len - 1);
+
+    // 堆化：使用 `heapify` 方法对数组进行堆化
+    for (int i = len - 1; i >= 0; i--) {
+        heapify(nums, i, len);
+    }
+
+    int heapSize = len;
+
+    // 进行排序：将最大元素放到数组末尾，并调整剩余元素为大根堆
+    for (int i = 0; i < len; i++) {
+        swap(nums, 0, --heapSize); // 将堆顶（最大值）放到数组末尾
+        heapify(nums, 0, heapSize); // 调整剩余部分为大根堆
+    }
+}
+
+// 主函数
+int main() {
+    // 测试用例
+    vector<int> arr = {3, 6, 8, 10, 1, 2, 1};
+
+    // 输出排序前的数组
+    cout << "排序前: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    // 调用快速排序函数
+    heapSort(arr);
+
+    // 输出排序后的数组
+    cout << "排序后: ";
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
 }
 ```,
 caption: [堆排序]
@@ -101,63 +145,87 @@ k个链表；n个节点。
 
 #figure(
 ```cpp
+#include <iostream>
 #include <vector>
+#include <queue>
+
 using namespace std;
 
-// 合并函数，用于将两个有序部分合并为一个有序数组
-void merge(vector<int> &arr, int L, int M, int R) {
-    // 创建一个临时数组用于存放合并后的结果
-    vector<int> container(R - L + 1);
-    int i = 0;
-    int p1 = L, p2 = M + 1; // p1指向左半部分的起始，p2指向右半部分的起始
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
 
-    // 当左右两部分都有剩余元素时，进行比较并放入容器
-    while (p1 <= M && p2 <= R) {
-        // 将较小的元素放入容器，并移动指针
-        container[i++] = (arr[p1] <= arr[p2]) ? arr[p1++] : arr[p2++];
+ListNode* mergeKLists(vector<ListNode*>& lists) {
+    // Priority queue (min-heap) to store the nodes based on their values
+    auto comp = [](ListNode* a, ListNode* b) { return a->val > b->val; };
+    priority_queue<ListNode*, vector<ListNode*>, decltype(comp)> heap(comp);
+
+    // Add the head of each non-null list into the heap
+    for (ListNode* listNode : lists) {
+        if (listNode != nullptr) {
+            heap.push(listNode);
+        }
     }
 
-    // 如果左半部分还有剩余元素，直接加入容器
-    while (p1 <= M) {
-        container[i++] = arr[p1++];
+    // If the heap is empty, return null (no lists to merge)
+    if (heap.empty()) {
+        return nullptr;
     }
 
-    // 如果右半部分还有剩余元素，直接加入容器
-    while (p2 <= R) {
-        container[i++] = arr[p2++];
+    // Initialize the merged list's head and tail
+    ListNode* head = heap.top();
+    heap.pop();
+    ListNode* tail = head;
+
+    // If the first node has a next node, add it to the heap
+    if (tail->next != nullptr) {
+        heap.push(tail->next);
     }
 
-    // 将容器中的元素复制回原数组相应位置
-    for (i = 0; i < container.size(); i++) {
-        arr[L + i] = container[i];
+    // Process the rest of the nodes in the heap
+    while (!heap.empty()) {
+        ListNode* cur = heap.top();
+        heap.pop();
+        tail->next = cur;  // Append the current node to the merged list
+        tail = cur;        // Move the tail pointer to the current node
+        if (cur->next != nullptr) {
+            heap.push(cur->next);  // If the current node has a next, add it to the heap
+        }
     }
+
+    // Return the merged list
+    return head;
 }
 
-// 递归处理函数，用于将数组分割并排序
-void process(vector<int> &arr, int L, int R) {
-    // 当左右边界相等时，不需要继续分割
-    if (L == R) {
-        return;
-    }
-    // 计算中间位置，避免直接加法导致的溢出
-    int mid = L + ((R - L) >> 1);
-    // 对左半部分进行递归排序
-    process(arr, L, mid);
-    // 对右半部分进行递归排序
-    process(arr, mid + 1, R);
-    // 合并已经排好序的左右两部分
-    merge(arr, L, mid, R);
-}
+int main() {
+    // Example usage
+    // Creating example linked lists
+    ListNode* list1 = new ListNode(1);
+    list1->next = new ListNode(4);
+    list1->next->next = new ListNode(5);
 
-// 归并排序
-void mergeSort(vector<int> &arr) {
-    int len = arr.size();
-    // 如果数组为空或者长度小于2，直接返回
-    if (arr.empty() || len < 2) {
-        return;
+    ListNode* list2 = new ListNode(1);
+    list2->next = new ListNode(3);
+    list2->next->next = new ListNode(4);
+
+    ListNode* list3 = new ListNode(2);
+    list3->next = new ListNode(6);
+
+    vector<ListNode*> lists = {list1, list2, list3};
+
+    // Merging the k sorted lists
+    ListNode* mergedList = mergeKLists(lists);
+
+    // Printing the merged list
+    ListNode* current = mergedList;
+    while (current != nullptr) {
+        cout << current->val << " ";
+        current = current->next;
     }
-    // 调用递归排序处理函数，初始范围为整个数组
-    process(arr, 0, len - 1);
+
+    return 0;
 }
 ```,
 caption: [合并K个有序链表]
@@ -2803,6 +2871,8 @@ random 指针是单链表节点结构中新增的指针,random 可能指向链�
 #include <iostream>
 #include <unordered_map>
 
+using namespace std;
+
 struct Node {
     int value;
     Node* next;
@@ -2815,7 +2885,7 @@ struct Node {
 Node* copyRandomList1(Node* head) {
     if (head == nullptr) return nullptr;
 
-    std::unordered_map<Node*, Node*> map;
+    unordered_map<Node*, Node*> map;
 
     // First pass: Create a copy of each node and store it in the map
     Node* temp = head;
@@ -2886,30 +2956,30 @@ int main() {
     Node* copiedList2 = copyRandomList2(head);
 
     // Output copied list from method 1
-    std::cout << "Copied List 1 (Method 1):" << std::endl;
+    cout << "Copied List 1 (Method 1):" << endl;
     Node* temp = copiedList1;
     while (temp != nullptr) {
-        std::cout << "Value: " << temp->value;
+        cout << "Value: " << temp->value;
         if (temp->random != nullptr) {
-            std::cout << ", Random Value: " << temp->random->value;
+            cout << ", Random Value: " << temp->random->value;
         } else {
-            std::cout << ", Random Value: nullptr";
+            cout << ", Random Value: nullptr";
         }
-        std::cout << std::endl;
+        cout << endl;
         temp = temp->next;
     }
 
     // Output copied list from method 2
-    std::cout << "Copied List 2 (Method 2):" << std::endl;
+    cout << "Copied List 2 (Method 2):" << endl;
     temp = copiedList2;
     while (temp != nullptr) {
-        std::cout << "Value: " << temp->value;
+        cout << "Value: " << temp->value;
         if (temp->random != nullptr) {
-            std::cout << ", Random Value: " << temp->random->value;
+            cout << ", Random Value: " << temp->random->value;
         } else {
-            std::cout << ", Random Value: nullptr";
+            cout << ", Random Value: nullptr";
         }
-        std::cout << std::endl;
+        cout << endl;
         temp = temp->next;
     }
 
@@ -2919,11 +2989,7 @@ int main() {
 caption: [复制含有随机指针节点的链表]
 )
 
-== 堆结构
-
 == 并查集
-
-== 有序表
 
 == 二分查找
 
