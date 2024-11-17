@@ -25,19 +25,18 @@ void initializeGraph(MGraph& graph, int numVertices) {
     }
 }
 
-
 vector<int> dijkstra(const MGraph& graph, int start) {
     vector<int> dist(graph.numVertices, INT_MAX); // 初始化所有顶点的距离为无穷大
     vector<bool> visited(graph.numVertices, false); // 初始化所有顶点为未访问
     dist[start] = 0; // 起点到自己的距离为 0
 
     // 使用优先队列来实现 Dijkstra 算法
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    pq.push({0, start}); // 将起点加入队列，初始距离为 0
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> heap;
+    heap.push({0, start}); // 将起点加入队列，初始距离为 0
 
-    while (!pq.empty()) {
-        int u = pq.top().second; // 取出当前距离最小的节点
-        pq.pop();
+    while (!heap.empty()) {
+        int u = heap.top().second; // 取出当前距离最小的节点
+        heap.pop();
 
         // 如果该节点已经被访问过，跳过
         if (visited[u]) continue;
@@ -50,7 +49,7 @@ vector<int> dijkstra(const MGraph& graph, int start) {
                 int newDist = dist[u] + graph.Edge[u][v];
                 if (newDist < dist[v]) {
                     dist[v] = newDist;
-                    pq.push({dist[v], v}); // 更新队列中的距离
+                    heap.push({dist[v], v}); // 更新队列中的距离
                 }
             }
         }

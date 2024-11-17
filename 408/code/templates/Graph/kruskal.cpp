@@ -1,11 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <climits>  // 包含INT_MAX
 
 using namespace std;
 
 const int MAXV = 100; // 最大顶点数
-const int INF = 1e9;  // 无穷大，表示无法到达的距离
+const int INF = INT_MAX;  // 无穷大，表示无法到达的距离
 
 // 图的结构定义
 typedef struct {
@@ -88,19 +89,19 @@ int main() {
         G->VerticesList[i] = 'a' + i;
     }
 
-    // 初始化邻接矩阵（边和权重）
-    G->edge[0][1] = 10;
-    G->edge[0][2] = 6;
-    G->edge[0][3] = 5;
-    G->edge[1][3] = 15;
-    G->edge[2][3] = 4;
-    G->edge[1][2] = 25;
-    G->edge[3][4] = 2;
+    // 初始化图的边（无向图）
+    G->edge[0][1] = G->edge[1][0] = 10;
+    G->edge[0][2] = G->edge[2][0] = 6;
+    G->edge[0][3] = G->edge[3][0] = 5;
+    G->edge[1][3] = G->edge[3][1] = 15;
+    G->edge[2][3] = G->edge[3][2] = 4;
+    G->edge[1][2] = G->edge[2][1] = 25;
+    G->edge[3][4] = G->edge[4][3] = 2;
 
     // 运行Kruskal算法
     int result = kruskal(G);
     if (result == -1) {
-        cout << "orz" << endl;
+        cout << "无法生成最小生成树，图不连通。" << endl;
     } else {
         cout << "Kruskal算法得到的最小生成树的权值为: " << result << endl;
     }
