@@ -67,20 +67,16 @@ void insertSort(vector<int> &arr) {
 
 // 主函数
 int main() {
-    // 测试用例
     vector<int> arr = {3, 6, 8, 10, 1, 2, 1};
 
-    // 输出排序前的数组
     cout << "排序前: ";
     for (int num : arr) {
         cout << num << " ";
     }
     cout << endl;
 
-    // 调用快速排序函数
     insertSort(arr);
 
-    // 输出排序后的数组
     cout << "排序后: ";
     for (int num : arr) {
         cout << num << " ";

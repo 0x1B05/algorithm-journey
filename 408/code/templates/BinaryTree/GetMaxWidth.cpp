@@ -6,48 +6,47 @@ using namespace std;
 
 class Node {
 public:
-    int value;
-    Node* left;
-    Node* right;
-    
-    // Constructor to initialize node
+    int value;       // 节点的值
+    Node* left;      // 左子节点
+    Node* right;     // 右子节点
+    // 构造函数初始化节点
     Node(int val) : value(val), left(nullptr), right(nullptr) {}
 };
 
-// Function to get the maximum width of the binary tree
-int getMaxWidth1(Node* root) {
-    if (root == nullptr) {
+// 获取二叉树最大宽度的函数
+int getMaxWidth(Node* root) {
+    if (root == nullptr) {  // 如果树为空，返回宽度为0
         return 0;
     }
 
-    queue<Node*> q;    // Queue to perform level-order traversal
-    q.push(root);       // Start with the root node
-    int maxWidth = 0;   // Variable to store the maximum width
+    queue<Node*> q;    // 队列用于进行层次遍历
+    q.push(root);       // 将根节点加入队列
+    int maxWidth = 0;   // 记录树的最大宽度
 
-    while (!q.empty()) {
-        int levelSize = q.size();  // Get the number of nodes at the current level
-        maxWidth = max(maxWidth, levelSize);  // Update the maximum width if needed
+    while (!q.empty()) {  // 队列不为空时继续遍历
+        int levelSize = q.size();  // 获取当前层的节点数
+        maxWidth = max(maxWidth, levelSize);  // 更新最大宽度
 
-        for (int i = 0; i < levelSize; i++) {
-            Node* temp = q.front();  // Get the front node of the queue
-            q.pop();
+        for (int i = 0; i < levelSize; i++) {  // 遍历当前层的所有节点
+            Node* temp = q.front();  // 获取队列中的第一个节点
+            q.pop();  // 弹出队列中的第一个节点
 
-            // Add the left and right children to the queue if they exist
+            // 如果当前节点有左子节点，将左子节点加入队列
             if (temp->left != nullptr) {
                 q.push(temp->left);
             }
+            // 如果当前节点有右子节点，将右子节点加入队列
             if (temp->right != nullptr) {
                 q.push(temp->right);
             }
         }
     }
 
-    return maxWidth;  // Return the maximum width of the tree
+    return maxWidth;  // 返回树的最大宽度
 }
 
-// Main function to test the getMaxWidth1 method
 int main() {
-    // Example binary tree:
+    // 示例二叉树：
     //         1
     //        / \
     //       2   3
@@ -61,7 +60,7 @@ int main() {
     root->right->left = new Node(6);
     root->right->right = new Node(7);
 
-    cout << "Maximum Width of the Tree: " << getMaxWidth1(root) << endl;
+    cout << "二叉树的最大宽度为: " << getMaxWidth(root) << endl;
 
     return 0;
 }
